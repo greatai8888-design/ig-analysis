@@ -171,6 +171,7 @@ const LOGOS   = {"heytea": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/7
 const DAYS = ['一','二','三','四','五','六','日'];
 const HOURS = Array.from({length:24},(_,i)=>i);
 const HOUR_LABELS = HOURS.map(h => h===0?'12am':h<12?h+'am':h===12?'12pm':(h-12)+'pm');
+const MY_BRAND = 'sunright';
 let activebrands = new Set(Object.keys(__DATA__));
 let _charts = {};
 let dateCutoff = 60;
@@ -285,8 +286,9 @@ function renderTiming() {
     if (!best) return;
     const h = parseInt(best[0]);
     const label = h===0?'12 am':h<12?h+' am':h===12?'12 pm':(h-12)+' pm';
-    pills.innerHTML += `<div class="time-pill">
-      <div class="brand-row">${LOGOS[key]?`<img src="${LOGOS[key]}">`:''}<span style="font-size:11px;font-weight:700;color:${b.color}">${b.name}</span></div>
+    const isMe = key === MY_BRAND;
+    pills.innerHTML += `<div class="time-pill" style="${isMe?'border:2px solid #1a7a3a;background:#F0F8F1;':''}">
+      <div class="brand-row">${LOGOS[key]?`<img src="${LOGOS[key]}">`:''}<span style="font-size:11px;font-weight:700;color:${b.color}">${b.name}</span>${isMe?'<span style="font-size:9px;background:#1a7a3a;color:#fff;border-radius:6px;padding:0 4px;margin-left:3px">⭐</span>':''}</div>
       <div class="best-val">${label}</div>
       <div class="best-label">互動率 ${(best[1].sum/best[1].n).toFixed(2)}%</div>
     </div>`;
