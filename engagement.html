@@ -23,6 +23,10 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
 .metric-toggle { display:flex; gap:4px; margin-left:auto; }
 .metric-btn { padding:5px 12px; border-radius:20px; border:1px solid #e5e5e5; background:#FDFAF5; font-size:11px; font-weight:600; color:#5C4A32; cursor:pointer; }
 .metric-btn.active { background:#5C3D2E; color:#fff; border-color:#2C1E0F; }
+.date-bar { background:#F7F1E8; border-bottom:1px solid #E5D9C8; padding:8px 28px; display:flex; align-items:center; gap:8px; }
+.date-btn { padding:4px 12px; border-radius:20px; border:1px solid #D5C5B0; background:#FDFAF5; font-size:11px; color:#5C4A32; cursor:pointer; }
+.date-btn.active { background:#B87030; color:#fff; border-color:#B87030; }
+.date-info { margin-left:auto; font-size:11px; color:#A89070; }
 
 /* KPI row */
 .kpi-row { display:flex; gap:12px; padding:16px 28px; flex-wrap:wrap; overflow-x:auto; }
@@ -73,6 +77,16 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
   </div>
 </div>
 
+<div class="date-bar">
+  <span style="font-size:11px;font-weight:600;color:#8B7355;">時間範圍</span>
+  <button class="date-btn" onclick="setDateRange(7,this)">近7天</button>
+  <button class="date-btn" onclick="setDateRange(30,this)">近30天</button>
+  <button class="date-btn active" onclick="setDateRange(60,this)">近60天</button>
+  <button class="date-btn" onclick="setDateRange(90,this)">近90天</button>
+  <button class="date-btn" onclick="setDateRange(365,this)">近1年</button>
+  <button class="date-btn" onclick="setDateRange(0,this)">全部</button>
+  <span class="date-info" id="dateInfo"></span>
+</div>
 <div class="kpi-row" id="kpiRow"></div>
 
 <div class="chart-section">
@@ -95,6 +109,22 @@ const LOGOS   = {"heytea": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/7
 let activebrands = new Set(Object.keys(__DATA__));
 let currentMetric = 'eng';
 let _chart = null;
+let dateCutoff = 60; // days, 0 = all
+
+function setDateRange(days, btn) {
+  dateCutoff = days;
+  document.querySelectorAll('.date-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderAll();
+}
+
+function getFilteredPosts(posts) {
+  if (!dateCutoff) return posts;
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - dateCutoff);
+  const cutStr = cutoff.toISOString().slice(0,10);
+  return posts.filter(p => p.date >= cutStr);
+}
 
 // ── Brand filter chips ───────────────────────────────────────
 function initFilters() {
@@ -143,7 +173,7 @@ function getWeeklyData() {
   Object.entries(__DATA__).forEach(([key, b]) => {
     if (!activebrands.has(key)) return;
     const wmap = {};
-    b.posts.filter(p => p.week && p.eng >= 0).forEach(p => {
+    getFilteredPosts(b.posts).filter(p => p.week && p.eng >= 0).forEach(p => {
       if (!wmap[p.week]) wmap[p.week] = { engSum:0, likes:0, n:0 };
       wmap[p.week].engSum += p.eng;
       wmap[p.week].likes  += Math.max(p.likes, 0);
@@ -321,6 +351,13 @@ function renderWeekTable() {
 }
 
 function renderAll() {
+  // Update date info label
+  const allPosts = Object.values(__DATA__).flatMap(b => getFilteredPosts(b.posts));
+  if (allPosts.length) {
+    const dates = allPosts.map(p=>p.date).filter(Boolean).sort();
+    const label = dateCutoff ? `${dates[0]} ~ ${dates[dates.length-1]}，共 ${allPosts.length} 篇貼文` : `全部 ${allPosts.length} 篇貼文`;
+    document.getElementById('dateInfo').textContent = label;
+  }
   renderKPI();
   renderTrendChart();
   renderWeekTable();
