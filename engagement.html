@@ -78,10 +78,10 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
 <div class="chart-section">
   <div class="chart-box">
     <h3 id="trendTitle">📊 每週互動率趨勢</h3>
-    <canvas id="trendChart"></canvas>
+    <div style="position:relative;height:320px"><canvas id="trendChart"></canvas></div>
   </div>
   <div class="chart-box">
-    <h3>📋 各週互動率明細</h3>
+    <h3>📋 各週互動率明細 <span style="font-size:12px;font-weight:normal;color:#A89070">（★ = 該品牌該週最高）</span></h3>
     <div style="overflow-x:auto;">
       <table class="week-table" id="weekTable"></table>
     </div>
@@ -240,6 +240,7 @@ function renderTrendChart() {
     data: { labels, datasets },
     options: {
       responsive: true,
+      maintainAspectRatio: false,
       interaction: { mode:'index', intersect:false },
       plugins: {
         legend: { position:'bottom', labels:{ boxWidth:12, font:{size:11}, padding:12 } },

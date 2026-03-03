@@ -110,7 +110,7 @@ canvas { max-height:240px; }
   </div>
   <div class="full-card">
     <h3>📊 各時段平均互動率（所有品牌合計）</h3>
-    <canvas id="hourChart"></canvas>
+    <div style="position:relative;height:260px"><canvas id="hourChart"></canvas></div>
   </div>
 </div>
 
@@ -295,7 +295,7 @@ function renderTiming() {
       borderColor:'#10b981', backgroundColor:'rgba(16,185,129,.12)',
       fill:true, tension:.4, pointRadius:3,
     }]},
-    options:{ responsive:true, plugins:{legend:{display:false}},
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
       scales:{ y:{ticks:{callback:v=>v.toFixed(1)+'%'}} } }
   });
 }
