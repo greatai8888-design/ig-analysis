@@ -153,7 +153,8 @@ function getWeeklyData() {
     brandWeeks[key] = wmap;
   });
 
-  const weeks = [...allWeeks].sort();
+  // Limit to last 20 weeks to keep chart readable
+  const weeks = [...allWeeks].sort().slice(-20);
   return { weeks, brandWeeks };
 }
 
@@ -190,7 +191,7 @@ function renderKPI() {
         <span style="color:${b.color}">${b.name}</span>
       </div>
       <div class="kpi-val">${avgEng.toFixed(2)}%</div>
-      <div class="kpi-sub">近4週平均互動率</div>
+      <div class="kpi-sub">${recent.length ? '近4週平均互動率' : '近4週無貼文'}</div>
       <div class="kpi-trend" style="color:${trendColor}">${trendTxt} 週趨勢</div>
     </div>`;
   });
@@ -254,7 +255,17 @@ function renderTrendChart() {
       },
       scales: {
         x: { ticks:{ font:{size:10}, maxRotation:45 } },
-        y: { title:{ display:true, text:yLabel }, ticks:{ callback:yCb } }
+        y: {
+          title:{ display:true, text:yLabel },
+          ticks:{ callback:yCb },
+          // Cap at 95th percentile to avoid viral outliers crushing the chart
+          max: currentMetric === 'eng' ? (() => {
+            const vals = datasets.flatMap(ds => ds.data.filter(v=>v!=null));
+            if (!vals.length) return undefined;
+            const s = [...vals].sort((a,b)=>a-b);
+            return Math.ceil(s[Math.floor(s.length*0.95)] * 1.3);
+          })() : undefined
+        }
       }
     }
   });
