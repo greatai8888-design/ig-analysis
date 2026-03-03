@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>競品分析中心</title>
+<style>
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); min-height:100vh; padding:40px 20px; }
+.container { max-width:900px; margin:0 auto; }
+.header { text-align:center; margin-bottom:40px; color:#fff; }
+.header h1 { font-size:32px; font-weight:800; margin-bottom:8px; }
+.header p { font-size:14px; opacity:.85; }
+.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; }
+.card { background:#fff; border-radius:20px; padding:28px; text-decoration:none; color:#1a1a1a; transition:transform .2s, box-shadow .2s; display:block; }
+.card:hover { transform:translateY(-4px); box-shadow:0 20px 40px rgba(0,0,0,.15); }
+.card-icon { font-size:36px; margin-bottom:14px; }
+.card h2 { font-size:18px; font-weight:700; margin-bottom:8px; }
+.card p { font-size:13px; color:#666; line-height:1.5; }
+.card .badge { display:inline-block; margin-top:12px; padding:4px 10px; border-radius:12px; font-size:10px; font-weight:600; text-transform:uppercase; }
+.badge.social { background:#dbeafe; color:#1e40af; }
+.badge.growth { background:#dcfce7; color:#166534; }
+.badge.search { background:#fef3c7; color:#92400e; }
+.badge.ads { background:#fce7f3; color:#9d174d; }
+.badge.deep { background:#f3e8ff; color:#6b21a8; }
+.footer { text-align:center; margin-top:40px; color:rgba(255,255,255,.7); font-size:12px; }
+.footer a { color:#fff; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🧋 競品分析中心</h1>
+    <p>SoCal 茶飲市場 · 7 個品牌 · 即時更新</p>
+  </div>
+
+  <div class="grid">
+    <a class="card" href="competitors.html">
+      <div class="card-icon">📊</div>
+      <h2>互動率總覽</h2>
+      <p>7 品牌互動率排行、日期區間篩選、粉絲規模 vs 互動率散點圖、各品牌最高互動貼文</p>
+      <span class="badge social">社群分析</span>
+    </a>
+
+    <a class="card" href="engagement.html">
+      <div class="card-icon">📈</div>
+      <h2>週趨勢分析</h2>
+      <p>各品牌每週互動率/讚數/發文數趨勢、KPI 卡片、週明細表格</p>
+      <span class="badge social">社群分析</span>
+    </a>
+
+    <a class="card" href="insights.html">
+      <div class="card-icon">🔍</div>
+      <h2>深度洞察</h2>
+      <p>最佳發文時段熱力圖、Hashtag 策略分析、Reels 影片數據</p>
+      <span class="badge deep">深度分析</span>
+    </a>
+
+    <a class="card" href="growth.html">
+      <div class="card-icon">👥</div>
+      <h2>成長 & 發文</h2>
+      <p>粉絲成長趨勢、發文頻率分析、內容類型組合</p>
+      <span class="badge growth">成長分析</span>
+    </a>
+
+    <a class="card" href="trends.html">
+      <div class="card-icon">🔎</div>
+      <h2>Google 搜尋趨勢</h2>
+      <p>品牌搜尋聲量對比、全美 vs 加州、相關搜尋詞</p>
+      <span class="badge search">搜尋分析</span>
+    </a>
+
+    <a class="card" href="https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=US&q=boba%20tea" target="_blank">
+      <div class="card-icon">📢</div>
+      <h2>Meta 廣告庫</h2>
+      <p>查看競品在 Facebook/Instagram 投放的廣告素材（外部連結）</p>
+      <span class="badge ads">廣告分析</span>
+    </a>
+  </div>
+
+  <div class="footer">
+    <p>資料更新：每週一早上 9:00 自動執行</p>
+    <p style="margin-top:6px">儀表板位置：<code style="background:rgba(255,255,255,.2);padding:2px 6px;border-radius:4px">~/workspace/ig-data/</code></p>
+  </div>
+</div>
+</body>
+</html>

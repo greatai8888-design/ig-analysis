@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Google 搜尋趨勢分析</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:#f5f5f7; color:#1a1a1a; }
+.header { background:#fff; padding:20px 28px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center; }
+.header h1 { font-size:18px; font-weight:700; }
+.header p { font-size:12px; color:#999; margin-top:3px; }
+.back-link { font-size:12px; color:#0095f6; text-decoration:none; }
+
+.filter-bar { background:#fff; border-bottom:1px solid #eee; padding:10px 28px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.filter-label { font-size:12px; font-weight:600; color:#888; white-space:nowrap; }
+.region-toggle { display:flex; gap:4px; }
+.region-btn { padding:5px 14px; border-radius:20px; border:1px solid #e5e5e5; background:#fff; font-size:11px; font-weight:600; color:#555; cursor:pointer; }
+.region-btn.active { background:#1a1a1a; color:#fff; border-color:#1a1a1a; }
+.kw-chips { display:flex; gap:6px; flex-wrap:wrap; }
+.kw-chip { padding:4px 12px; border-radius:20px; border:2px solid; font-size:11px; font-weight:600; cursor:pointer; transition:opacity .15s; }
+.kw-chip:not(.active) { opacity:.35; }
+
+.content { padding:20px 28px; }
+.card { background:#fff; border-radius:16px; border:1px solid #eee; padding:18px; margin-bottom:16px; }
+.card h3 { font-size:12px; font-weight:600; color:#888; text-transform:uppercase; letter-spacing:.4px; margin-bottom:14px; }
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+canvas { max-height:260px; }
+
+.kpi-row { display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
+.kpi { background:#fff; border-radius:14px; border:1px solid #eee; padding:14px 18px; flex:1; min-width:130px; }
+.kpi-label { font-size:11px; font-weight:700; margin-bottom:4px; }
+.kpi-val { font-size:26px; font-weight:800; }
+.kpi-sub { font-size:10px; color:#aaa; margin-top:2px; }
+.kpi-trend { font-size:11px; font-weight:600; margin-top:4px; }
+
+.related-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+.related-box { background:#f8f8f8; border-radius:10px; padding:12px; }
+.related-box h4 { font-size:11px; font-weight:700; margin-bottom:8px; color:#555; }
+.related-item { display:flex; align-items:center; gap:8px; margin-bottom:5px; }
+.related-item .bar { height:5px; border-radius:3px; flex-shrink:0; }
+.related-item .qtext { font-size:11px; color:#333; }
+
+.note { font-size:10px; color:#aaa; margin-top:8px; }
+
+@media(max-width:768px) {
+  .grid2,.related-grid { grid-template-columns:1fr; }
+  .filter-bar,.content { padding-left:16px; padding-right:16px; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>🔍 Google 搜尋趨勢</h1>
+    <p>品牌搜尋聲量 · 週趨勢 · 地區對比（資料來源：Google Trends）</p>
+  </div>
+  <a class="back-link" href="competitors.html">← 返回互動率總覽</a>
+</div>
+
+<div class="filter-bar">
+  <span class="filter-label">地區</span>
+  <div class="region-toggle">
+    <button class="region-btn active" onclick="setRegion('us',this)">🇺🇸 全美</button>
+    <button class="region-btn" onclick="setRegion('ca',this)">☀️ 加州</button>
+  </div>
+  <span class="filter-label" style="margin-left:8px">品牌</span>
+  <div class="kw-chips" id="kwChips"></div>
+</div>
+
+<div class="content">
+  <div class="kpi-row" id="kpiRow"></div>
+
+  <div class="card">
+    <h3>📈 搜尋聲量週趨勢（過去 12 個月，相對指數 0–100）</h3>
+    <canvas id="trendChart"></canvas>
+    <p class="note">Google Trends 指數為相對值，100 = 該期間最高搜尋量，非絕對搜尋次數</p>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>📊 近 4 週平均聲量排行</h3>
+      <canvas id="rankChart"></canvas>
+    </div>
+    <div class="card">
+      <h3>📅 月份聲量對比（過去 3 個月）</h3>
+      <canvas id="monthChart"></canvas>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🔎 相關搜尋詞（人們搜尋品牌時一起搜什麼）</h3>
+    <div class="related-grid" id="relatedGrid"></div>
+  </div>
+</div>
+
+<script>
+const __TRENDS__ = {"us": [{"date": "2025-03-02", "heytea": 39, "sunright tea": 10, "chagee": 6, "torotea": 2, "wushiland boba": 4}, {"date": "2025-03-09", "heytea": 40, "sunright tea": 9, "chagee": 8, "torotea": 2, "wushiland boba": 4}, {"date": "2025-03-16", "heytea": 40, "sunright tea": 10, "chagee": 10, "torotea": 3, "wushiland boba": 5}, {"date": "2025-03-23", "heytea": 42, "sunright tea": 10, "chagee": 10, "torotea": 3, "wushiland boba": 3}, {"date": "2025-03-30", "heytea": 36, "sunright tea": 9, "chagee": 8, "torotea": 2, "wushiland boba": 2}, {"date": "2025-04-06", "heytea": 32, "sunright tea": 9, "chagee": 11, "torotea": 0, "wushiland boba": 0}, {"date": "2025-04-13", "heytea": 45, "sunright tea": 9, "chagee": 33, "torotea": 2, "wushiland boba": 3}, {"date": "2025-04-20", "heytea": 40, "sunright tea": 9, "chagee": 22, "torotea": 3, "wushiland boba": 4}, {"date": "2025-04-27", "heytea": 46, "sunright tea": 11, "chagee": 24, "torotea": 4, "wushiland boba": 3}, {"date": "2025-05-04", "heytea": 50, "sunright tea": 10, "chagee": 31, "torotea": 4, "wushiland boba": 3}, {"date": "2025-05-11", "heytea": 46, "sunright tea": 10, "chagee": 30, "torotea": 3, "wushiland boba": 3}, {"date": "2025-05-18", "heytea": 40, "sunright tea": 11, "chagee": 19, "torotea": 7, "wushiland boba": 5}, {"date": "2025-05-25", "heytea": 47, "sunright tea": 14, "chagee": 19, "torotea": 4, "wushiland boba": 3}, {"date": "2025-06-01", "heytea": 44, "sunright tea": 13, "chagee": 17, "torotea": 4, "wushiland boba": 4}, {"date": "2025-06-08", "heytea": 42, "sunright tea": 11, "chagee": 13, "torotea": 3, "wushiland boba": 5}, {"date": "2025-06-15", "heytea": 52, "sunright tea": 16, "chagee": 14, "torotea": 3, "wushiland boba": 4}, {"date": "2025-06-22", "heytea": 43, "sunright tea": 9, "chagee": 13, "torotea": 4, "wushiland boba": 3}, {"date": "2025-06-29", "heytea": 52, "sunright tea": 12, "chagee": 16, "torotea": 4, "wushiland boba": 3}, {"date": "2025-07-06", "heytea": 71, "sunright tea": 12, "chagee": 15, "torotea": 2, "wushiland boba": 3}, {"date": "2025-07-13", "heytea": 56, "sunright tea": 13, "chagee": 19, "torotea": 3, "wushiland boba": 5}, {"date": "2025-07-20", "heytea": 100, "sunright tea": 11, "chagee": 37, "torotea": 3, "wushiland boba": 4}, {"date": "2025-07-27", "heytea": 98, "sunright tea": 13, "chagee": 61, "torotea": 3, "wushiland boba": 3}, {"date": "2025-08-03", "heytea": 65, "sunright tea": 26, "chagee": 18, "torotea": 5, "wushiland boba": 3}, {"date": "2025-08-10", "heytea": 64, "sunright tea": 31, "chagee": 17, "torotea": 4, "wushiland boba": 2}, {"date": "2025-08-17", "heytea": 57, "sunright tea": 16, "chagee": 14, "torotea": 4, "wushiland boba": 4}, {"date": "2025-08-24", "heytea": 72, "sunright tea": 11, "chagee": 16, "torotea": 3, "wushiland boba": 4}, {"date": "2025-08-31", "heytea": 53, "sunright tea": 9, "chagee": 14, "torotea": 4, "wushiland boba": 4}, {"date": "2025-09-07", "heytea": 44, "sunright tea": 9, "chagee": 10, "torotea": 2, "wushiland boba": 2}, {"date": "2025-09-14", "heytea": 55, "sunright tea": 10, "chagee": 11, "torotea": 3, "wushiland boba": 3}, {"date": "2025-09-21", "heytea": 55, "sunright tea": 10, "chagee": 8, "torotea": 3, "wushiland boba": 3}, {"date": "2025-09-28", "heytea": 48, "sunright tea": 8, "chagee": 11, "torotea": 2, "wushiland boba": 2}, {"date": "2025-10-05", "heytea": 50, "sunright tea": 7, "chagee": 9, "torotea": 2, "wushiland boba": 3}, {"date": "2025-10-12", "heytea": 58, "sunright tea": 8, "chagee": 11, "torotea": 2, "wushiland boba": 3}, {"date": "2025-10-19", "heytea": 47, "sunright tea": 11, "chagee": 10, "torotea": 3, "wushiland boba": 2}, {"date": "2025-10-26", "heytea": 48, "sunright tea": 11, "chagee": 14, "torotea": 3, "wushiland boba": 2}, {"date": "2025-11-02", "heytea": 54, "sunright tea": 7, "chagee": 21, "torotea": 0, "wushiland boba": 3}, {"date": "2025-11-09", "heytea": 46, "sunright tea": 8, "chagee": 27, "torotea": 5, "wushiland boba": 3}, {"date": "2025-11-16", "heytea": 42, "sunright tea": 7, "chagee": 22, "torotea": 6, "wushiland boba": 3}, {"date": "2025-11-23", "heytea": 57, "sunright tea": 8, "chagee": 27, "torotea": 6, "wushiland boba": 4}, {"date": "2025-11-30", "heytea": 53, "sunright tea": 4, "chagee": 18, "torotea": 3, "wushiland boba": 2}, {"date": "2025-12-07", "heytea": 50, "sunright tea": 7, "chagee": 20, "torotea": 3, "wushiland boba": 4}, {"date": "2025-12-14", "heytea": 52, "sunright tea": 7, "chagee": 23, "torotea": 4, "wushiland boba": 0}, {"date": "2025-12-21", "heytea": 86, "sunright tea": 8, "chagee": 22, "torotea": 8, "wushiland boba": 5}, {"date": "2025-12-28", "heytea": 75, "sunright tea": 9, "chagee": 21, "torotea": 8, "wushiland boba": 5}, {"date": "2026-01-04", "heytea": 47, "sunright tea": 7, "chagee": 18, "torotea": 5, "wushiland boba": 3}, {"date": "2026-01-11", "heytea": 46, "sunright tea": 9, "chagee": 17, "torotea": 6, "wushiland boba": 5}, {"date": "2026-01-18", "heytea": 63, "sunright tea": 7, "chagee": 21, "torotea": 5, "wushiland boba": 4}, {"date": "2026-01-25", "heytea": 54, "sunright tea": 9, "chagee": 33, "torotea": 5, "wushiland boba": 3}, {"date": "2026-02-01", "heytea": 67, "sunright tea": 7, "chagee": 27, "torotea": 4, "wushiland boba": 4}, {"date": "2026-02-08", "heytea": 60, "sunright tea": 6, "chagee": 31, "torotea": 4, "wushiland boba": 3}, {"date": "2026-02-15", "heytea": 62, "sunright tea": 7, "chagee": 26, "torotea": 4, "wushiland boba": 4}, {"date": "2026-02-22", "heytea": 60, "sunright tea": 8, "chagee": 20, "torotea": 4, "wushiland boba": 5}, {"date": "2026-03-01", "heytea": 60, "sunright tea": 8, "chagee": 22, "torotea": 5, "wushiland boba": 4}], "ca": [{"date": "2025-03-02", "heytea": 38, "sunright tea": 20, "chagee": 9, "torotea": 5, "wushiland boba": 8}, {"date": "2025-03-09", "heytea": 34, "sunright tea": 18, "chagee": 14, "torotea": 0, "wushiland boba": 7}, {"date": "2025-03-16", "heytea": 35, "sunright tea": 17, "chagee": 13, "torotea": 5, "wushiland boba": 8}, {"date": "2025-03-23", "heytea": 34, "sunright tea": 20, "chagee": 13, "torotea": 7, "wushiland boba": 8}, {"date": "2025-03-30", "heytea": 35, "sunright tea": 18, "chagee": 9, "torotea": 6, "wushiland boba": 4}, {"date": "2025-04-06", "heytea": 37, "sunright tea": 20, "chagee": 14, "torotea": 0, "wushiland boba": 5}, {"date": "2025-04-13", "heytea": 41, "sunright tea": 18, "chagee": 40, "torotea": 5, "wushiland boba": 6}, {"date": "2025-04-20", "heytea": 35, "sunright tea": 18, "chagee": 32, "torotea": 10, "wushiland boba": 8}, {"date": "2025-04-27", "heytea": 36, "sunright tea": 21, "chagee": 46, "torotea": 10, "wushiland boba": 6}, {"date": "2025-05-04", "heytea": 41, "sunright tea": 19, "chagee": 59, "torotea": 10, "wushiland boba": 5}, {"date": "2025-05-11", "heytea": 42, "sunright tea": 18, "chagee": 57, "torotea": 7, "wushiland boba": 8}, {"date": "2025-05-18", "heytea": 35, "sunright tea": 23, "chagee": 34, "torotea": 9, "wushiland boba": 12}, {"date": "2025-05-25", "heytea": 43, "sunright tea": 28, "chagee": 37, "torotea": 13, "wushiland boba": 7}, {"date": "2025-06-01", "heytea": 39, "sunright tea": 29, "chagee": 25, "torotea": 9, "wushiland boba": 10}, {"date": "2025-06-08", "heytea": 32, "sunright tea": 23, "chagee": 19, "torotea": 5, "wushiland boba": 11}, {"date": "2025-06-15", "heytea": 38, "sunright tea": 34, "chagee": 24, "torotea": 10, "wushiland boba": 8}, {"date": "2025-06-22", "heytea": 28, "sunright tea": 18, "chagee": 18, "torotea": 11, "wushiland boba": 6}, {"date": "2025-06-29", "heytea": 41, "sunright tea": 26, "chagee": 26, "torotea": 9, "wushiland boba": 0}, {"date": "2025-07-06", "heytea": 66, "sunright tea": 24, "chagee": 21, "torotea": 6, "wushiland boba": 7}, {"date": "2025-07-13", "heytea": 44, "sunright tea": 25, "chagee": 25, "torotea": 11, "wushiland boba": 11}, {"date": "2025-07-20", "heytea": 100, "sunright tea": 24, "chagee": 31, "torotea": 9, "wushiland boba": 9}, {"date": "2025-07-27", "heytea": 91, "sunright tea": 22, "chagee": 37, "torotea": 8, "wushiland boba": 8}, {"date": "2025-08-03", "heytea": 71, "sunright tea": 43, "chagee": 30, "torotea": 13, "wushiland boba": 5}, {"date": "2025-08-10", "heytea": 70, "sunright tea": 52, "chagee": 27, "torotea": 11, "wushiland boba": 7}, {"date": "2025-08-17", "heytea": 54, "sunright tea": 32, "chagee": 22, "torotea": 9, "wushiland boba": 7}, {"date": "2025-08-24", "heytea": 73, "sunright tea": 22, "chagee": 25, "torotea": 6, "wushiland boba": 10}, {"date": "2025-08-31", "heytea": 58, "sunright tea": 19, "chagee": 24, "torotea": 10, "wushiland boba": 8}, {"date": "2025-09-07", "heytea": 45, "sunright tea": 21, "chagee": 16, "torotea": 4, "wushiland boba": 4}, {"date": "2025-09-14", "heytea": 55, "sunright tea": 23, "chagee": 18, "torotea": 6, "wushiland boba": 6}, {"date": "2025-09-21", "heytea": 57, "sunright tea": 20, "chagee": 13, "torotea": 7, "wushiland boba": 8}, {"date": "2025-09-28", "heytea": 47, "sunright tea": 20, "chagee": 17, "torotea": 5, "wushiland boba": 5}, {"date": "2025-10-05", "heytea": 42, "sunright tea": 15, "chagee": 13, "torotea": 4, "wushiland boba": 5}, {"date": "2025-10-12", "heytea": 55, "sunright tea": 15, "chagee": 18, "torotea": 9, "wushiland boba": 6}, {"date": "2025-10-19", "heytea": 48, "sunright tea": 19, "chagee": 15, "torotea": 8, "wushiland boba": 5}, {"date": "2025-10-26", "heytea": 47, "sunright tea": 22, "chagee": 22, "torotea": 5, "wushiland boba": 6}, {"date": "2025-11-02", "heytea": 47, "sunright tea": 14, "chagee": 40, "torotea": 6, "wushiland boba": 8}, {"date": "2025-11-09", "heytea": 39, "sunright tea": 16, "chagee": 39, "torotea": 11, "wushiland boba": 5}, {"date": "2025-11-16", "heytea": 41, "sunright tea": 15, "chagee": 35, "torotea": 13, "wushiland boba": 8}, {"date": "2025-11-23", "heytea": 57, "sunright tea": 16, "chagee": 47, "torotea": 12, "wushiland boba": 8}, {"date": "2025-11-30", "heytea": 63, "sunright tea": 10, "chagee": 23, "torotea": 6, "wushiland boba": 5}, {"date": "2025-12-07", "heytea": 62, "sunright tea": 15, "chagee": 30, "torotea": 9, "wushiland boba": 8}, {"date": "2025-12-14", "heytea": 59, "sunright tea": 16, "chagee": 32, "torotea": 6, "wushiland boba": 5}, {"date": "2025-12-21", "heytea": 97, "sunright tea": 16, "chagee": 31, "torotea": 20, "wushiland boba": 9}, {"date": "2025-12-28", "heytea": 83, "sunright tea": 21, "chagee": 36, "torotea": 21, "wushiland boba": 11}, {"date": "2026-01-04", "heytea": 52, "sunright tea": 14, "chagee": 28, "torotea": 13, "wushiland boba": 7}, {"date": "2026-01-11", "heytea": 52, "sunright tea": 17, "chagee": 26, "torotea": 15, "wushiland boba": 8}, {"date": "2026-01-18", "heytea": 77, "sunright tea": 12, "chagee": 35, "torotea": 13, "wushiland boba": 8}, {"date": "2026-01-25", "heytea": 61, "sunright tea": 18, "chagee": 50, "torotea": 10, "wushiland boba": 4}, {"date": "2026-02-01", "heytea": 73, "sunright tea": 14, "chagee": 40, "torotea": 8, "wushiland boba": 7}, {"date": "2026-02-08", "heytea": 73, "sunright tea": 14, "chagee": 51, "torotea": 8, "wushiland boba": 7}, {"date": "2026-02-15", "heytea": 72, "sunright tea": 14, "chagee": 45, "torotea": 12, "wushiland boba": 9}, {"date": "2026-02-22", "heytea": 71, "sunright tea": 15, "chagee": 38, "torotea": 9, "wushiland boba": 10}, {"date": "2026-03-01", "heytea": 72, "sunright tea": 16, "chagee": 42, "torotea": 13, "wushiland boba": 9}], "related": {"heytea": ["heytea menu", "heytea matcha", "heytea order", "heytea near me", "heytea nyc"], "chagee": ["chagee tea", "chagee stock", "chagee menu", "chagee century city", "chagee usa"], "boba_general": ["tea boba near me", "boba near me", "tea near me", "milk tea boba", "milk tea"]}, "brands": {"heytea": {"label": "Hey Tea", "color": "#FF4D6D"}, "sunright tea": {"label": "Sunright Tea", "color": "#F97316"}, "chagee": {"label": "Chagee", "color": "#06B6D4"}, "torotea": {"label": "Torotea", "color": "#10B981"}, "wushiland boba": {"label": "Wushiland Boba", "color": "#EC4899"}, "boba tea": {"label": "Boba Tea", "color": "#9CA3AF"}, "milk tea": {"label": "Milk Tea", "color": "#D1D5DB"}}};
+const BRAND_KEYS = ['heytea','sunright tea','chagee','torotea','wushiland boba'];
+let activeKws = new Set(BRAND_KEYS);
+let currentRegion = 'us';
+let _charts = {};
+
+// ── Init KW chips ────────────────────────────────────────────
+function initChips() {
+  const container = document.getElementById('kwChips');
+  BRAND_KEYS.forEach(kw => {
+    const b = __TRENDS__.brands[kw];
+    const chip = document.createElement('div');
+    chip.className = 'kw-chip active';
+    chip.style.borderColor = b.color;
+    chip.style.color = b.color;
+    chip.textContent = b.label;
+    chip.addEventListener('click', () => {
+      if (activeKws.has(kw)) {
+        if (activeKws.size <= 1) return;
+        activeKws.delete(kw);
+        chip.classList.remove('active');
+      } else {
+        activeKws.add(kw);
+        chip.classList.add('active');
+      }
+      renderAll();
+    });
+    container.appendChild(chip);
+  });
+}
+
+function setRegion(r, btn) {
+  currentRegion = r;
+  document.querySelectorAll('.region-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderAll();
+}
+
+function destroyChart(id) {
+  if (_charts[id]) { try { _charts[id].destroy(); } catch(e){} delete _charts[id]; }
+}
+
+function getData() {
+  return __TRENDS__[currentRegion] || [];
+}
+
+// ── KPI cards ────────────────────────────────────────────────
+function renderKPI() {
+  const rows = getData();
+  const last4 = rows.slice(-4);
+  const row = document.getElementById('kpiRow');
+  row.innerHTML = '';
+
+  BRAND_KEYS.filter(kw => activeKws.has(kw)).forEach(kw => {
+    const b = __TRENDS__.brands[kw];
+    const recent = last4.map(r => r[kw] || 0);
+    const avg = recent.reduce((a,v)=>a+v,0) / recent.length;
+    const prev4 = rows.slice(-8,-4).map(r => r[kw] || 0);
+    const prevAvg = prev4.length ? prev4.reduce((a,v)=>a+v,0)/prev4.length : 0;
+    const trend = prevAvg ? ((avg-prevAvg)/prevAvg*100) : 0;
+    const trendTxt = trend > 0 ? `▲ ${trend.toFixed(0)}%` : trend < 0 ? `▼ ${Math.abs(trend).toFixed(0)}%` : '–';
+    const trendColor = trend > 0 ? '#16a34a' : trend < 0 ? '#dc2626' : '#aaa';
+    row.innerHTML += `<div class="kpi">
+      <div class="kpi-label" style="color:${b.color}">${b.label}</div>
+      <div class="kpi-val">${avg.toFixed(0)}</div>
+      <div class="kpi-sub">近4週平均指數</div>
+      <div class="kpi-trend" style="color:${trendColor}">${trendTxt} vs 前4週</div>
+    </div>`;
+  });
+}
+
+// ── Trend line chart ─────────────────────────────────────────
+function renderTrend() {
+  const rows = getData();
+  const labels = rows.map(r => r.date?.slice(0,10) || '');
+  destroyChart('trend');
+  _charts.trend = new Chart(document.getElementById('trendChart'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: BRAND_KEYS.filter(kw => activeKws.has(kw)).map(kw => {
+        const b = __TRENDS__.brands[kw];
+        return {
+          label: b.label,
+          data: rows.map(r => r[kw] ?? null),
+          borderColor: b.color,
+          backgroundColor: b.color + '18',
+          pointRadius: 2,
+          pointHoverRadius: 5,
+          borderWidth: 2,
+          tension: .35,
+          fill: false,
+          spanGaps: true,
+        };
+      })
+    },
+    options: {
+      responsive: true,
+      interaction: { mode:'index', intersect:false },
+      plugins: { legend:{ position:'bottom', labels:{boxWidth:12,font:{size:11},padding:10} } },
+      scales: {
+        x: { ticks:{ maxTicksLimit:12, font:{size:10}, maxRotation:45 } },
+        y: { min:0, max:100, title:{display:true,text:'搜尋指數'} }
+      }
+    }
+  });
+}
+
+// ── Rank bar chart ───────────────────────────────────────────
+function renderRank() {
+  const rows = getData();
+  const last4 = rows.slice(-4);
+  const active = BRAND_KEYS.filter(kw => activeKws.has(kw));
+  const avgs = active.map(kw => last4.reduce((s,r)=>s+(r[kw]||0),0)/last4.length);
+  const sorted = active.map((kw,i)=>({kw, avg:avgs[i]})).sort((a,z)=>z.avg-a.avg);
+
+  destroyChart('rank');
+  _charts.rank = new Chart(document.getElementById('rankChart'), {
+    type: 'bar',
+    data: {
+      labels: sorted.map(d => __TRENDS__.brands[d.kw].label),
+      datasets: [{ data: sorted.map(d=>+d.avg.toFixed(1)), backgroundColor: sorted.map(d=>__TRENDS__.brands[d.kw].color), borderRadius:8 }]
+    },
+    options: {
+      responsive: true, indexAxis:'y',
+      plugins:{ legend:{display:false} },
+      scales:{ x:{max:100, title:{display:true,text:'搜尋指數'}} }
+    }
+  });
+}
+
+// ── Month bar chart ──────────────────────────────────────────
+function renderMonth() {
+  const rows = getData();
+  const months = {};
+  rows.forEach(r => {
+    const m = (r.date||'').slice(0,7);
+    if (!months[m]) months[m] = {};
+    BRAND_KEYS.forEach(kw => {
+      if (!months[m][kw]) months[m][kw] = [];
+      if (r[kw] != null) months[m][kw].push(r[kw]);
+    });
+  });
+  const last3 = Object.keys(months).sort().slice(-3);
+
+  destroyChart('month');
+  _charts.month = new Chart(document.getElementById('monthChart'), {
+    type: 'bar',
+    data: {
+      labels: last3,
+      datasets: BRAND_KEYS.filter(kw=>activeKws.has(kw)).map(kw => {
+        const b = __TRENDS__.brands[kw];
+        return {
+          label: b.label,
+          data: last3.map(m => {
+            const vals = (months[m]||{})[kw]||[];
+            return vals.length ? +(vals.reduce((a,v)=>a+v,0)/vals.length).toFixed(1) : 0;
+          }),
+          backgroundColor: b.color + 'cc',
+          borderRadius: 4,
+        };
+      })
+    },
+    options: {
+      responsive: true,
+      plugins: { legend:{position:'bottom',labels:{boxWidth:10,font:{size:10}}} },
+      scales: { y:{max:100,title:{display:true,text:'搜尋指數'}} }
+    }
+  });
+}
+
+// ── Related queries ──────────────────────────────────────────
+function renderRelated() {
+  const grid = document.getElementById('relatedGrid');
+  const colors = { heytea:'#FF4D6D', chagee:'#06B6D4', boba_general:'#9CA3AF' };
+  const labels = { heytea:'Hey Tea 相關搜尋', chagee:'Chagee 相關搜尋', boba_general:'手搖飲整體趨勢' };
+  grid.innerHTML = Object.entries(__TRENDS__.related).map(([key, queries]) => {
+    const maxV = 100;
+    const rows = queries.map(q => {
+      const w = Math.round(100/queries.length * (queries.length - queries.indexOf(q)));
+      return `<div class="related-item">
+        <div class="bar" style="width:${w}px;max-width:80px;background:${colors[key]||'#ccc'};opacity:.7"></div>
+        <span class="qtext">${q}</span>
+      </div>`;
+    }).join('');
+    return `<div class="related-box">
+      <h4 style="color:${colors[key]||'#888'}">${labels[key]||key}</h4>
+      ${rows}
+    </div>`;
+  }).join('');
+}
+
+function renderAll() {
+  renderKPI();
+  renderTrend();
+  renderRank();
+  renderMonth();
+  renderRelated();
+}
+
+initChips();
+renderAll();
+</script>
+</body>
+</html>

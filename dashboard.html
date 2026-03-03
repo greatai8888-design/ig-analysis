@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Torotea IG Dashboard</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fafafa; color: #1a1a1a; }
+
+  .header { background: #fff; border-bottom: 1px solid #eee; padding: 24px 32px; display: flex; align-items: center; gap: 20px; }
+  .profile-pic { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 2px solid #eee; }
+  .profile-info h1 { font-size: 22px; font-weight: 700; }
+  .profile-info p { color: #666; font-size: 14px; margin-top: 4px; }
+  .badge { display: inline-block; background: #f0f0f0; border-radius: 12px; padding: 2px 10px; font-size: 12px; margin-top: 4px; }
+
+  .stats-bar { display: flex; gap: 0; background: #fff; border-bottom: 1px solid #eee; }
+  .stat { flex: 1; padding: 20px 24px; text-align: center; border-right: 1px solid #eee; }
+  .stat:last-child { border-right: none; }
+  .stat .num { font-size: 24px; font-weight: 700; color: #1a1a1a; }
+  .stat .label { font-size: 12px; color: #999; margin-top: 4px; }
+
+  .controls { padding: 20px 32px; display: flex; gap: 12px; align-items: center; background: #fafafa; border-bottom: 1px solid #eee; flex-wrap: wrap; }
+  .controls select, .controls input { padding: 8px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; background: #fff; }
+  .controls label { font-size: 14px; color: #666; }
+  .tag { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 12px; cursor: pointer; border: 1px solid #ddd; background: #fff; }
+  .tag.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; padding: 24px 32px; }
+
+  .card { background: #fff; border-radius: 16px; overflow: hidden; border: 1px solid #eee; transition: box-shadow 0.2s; }
+  .card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+  .card-img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: #f0f0f0; }
+  .card-img-placeholder { width: 100%; aspect-ratio: 1; background: linear-gradient(135deg, #f0f0f0, #e0e0e0); display: flex; align-items: center; justify-content: center; font-size: 40px; }
+  .card-body { padding: 16px; }
+  .card-meta { display: flex; gap: 16px; margin-bottom: 10px; }
+  .card-meta span { font-size: 13px; color: #666; display: flex; align-items: center; gap: 4px; }
+  .card-meta .num { font-weight: 600; color: #1a1a1a; }
+  .card-caption { font-size: 13px; line-height: 1.5; color: #333; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+  .card-date { font-size: 11px; color: #aaa; margin-top: 10px; }
+  .card-hashtags { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 4px; }
+  .hashtag { font-size: 11px; color: #0095f6; }
+  .card-link { display: block; font-size: 12px; color: #0095f6; margin-top: 8px; text-decoration: none; }
+  .card-link:hover { text-decoration: underline; }
+
+  .type-badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; margin-bottom: 8px; }
+  .type-Image { background: #e8f4fd; color: #0369a1; }
+  .type-Video { background: #fef3c7; color: #92400e; }
+  .type-Sidecar { background: #f0fdf4; color: #166534; }
+
+  .empty { text-align: center; padding: 80px; color: #aaa; grid-column: 1/-1; }
+
+  .chart-section { padding: 24px 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .chart-box { background: #fff; border-radius: 16px; border: 1px solid #eee; padding: 20px; }
+  .chart-box h3 { font-size: 14px; font-weight: 600; margin-bottom: 16px; color: #666; }
+  .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .bar-label { width: 60px; font-size: 12px; color: #666; text-align: right; flex-shrink: 0; }
+  .bar-track { flex: 1; background: #f0f0f0; border-radius: 4px; height: 20px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #1a1a1a, #555); transition: width 0.6s; display: flex; align-items: center; padding: 0 6px; }
+  .bar-fill span { font-size: 11px; color: #fff; white-space: nowrap; }
+
+  @media (max-width: 768px) {
+    .chart-section { grid-template-columns: 1fr; }
+    .grid { grid-template-columns: 1fr; padding: 16px; }
+    .header { padding: 16px; }
+    .stats-bar { flex-wrap: wrap; }
+    .stat { min-width: 50%; }
+    .controls { padding: 12px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header" id="profileHeader">
+  <div class="profile-info">
+    <h1>載入中...</h1>
+  </div>
+</div>
+
+<div class="stats-bar" id="statsBar"></div>
+
+<div class="chart-section" id="charts"></div>
+
+<div class="controls">
+  <label>排序：</label>
+  <select id="sortSelect">
+    <option value="date-desc">最新</option>
+    <option value="date-asc">最舊</option>
+    <option value="likes-desc">最多讚</option>
+    <option value="comments-desc">最多留言</option>
+  </select>
+  <label>類型：</label>
+  <span class="tag active" data-type="all">全部</span>
+  <span class="tag" data-type="Image">圖片</span>
+  <span class="tag" data-type="Video">影片</span>
+  <span class="tag" data-type="Sidecar">多圖</span>
+  <label style="margin-left:auto">搜尋：</label>
+  <input type="text" id="searchInput" placeholder="搜尋貼文..." style="width:200px">
+</div>
+
+<div class="grid" id="grid"></div>
+
+<script>
+fetch('torotea_2026-03-02.json')
+  .then(r => r.json())
+  .then(data => {
+    init(data);
+  });
+
+function init(raw) {
+  const posts = raw.filter(p => p.timestamp);
+  const profile = raw[0];
+
+  // Header
+  document.getElementById('profileHeader').innerHTML = `
+    <img class="profile-pic" src="${profile.profilePicUrlHD || profile.profilePicUrl}" onerror="this.style.display='none'">
+    <div class="profile-info">
+      <h1>@${profile.ownerUsername || profile.username}</h1>
+      <p>${profile.fullName || ''} ${profile.businessCategoryName && profile.businessCategoryName !== 'None' ? '· ' + profile.businessCategoryName.replace('None,','') : ''}</p>
+      <span class="badge">${profile.biography ? profile.biography.split('\n')[0] : ''}</span>
+    </div>
+  `;
+
+  // Stats
+  const totalLikes = posts.reduce((s,p) => s + (p.likesCount||0), 0);
+  const totalComments = posts.reduce((s,p) => s + (p.commentsCount||0), 0);
+  const avgLikes = Math.round(totalLikes / posts.length);
+  const avgComments = Math.round(totalComments / posts.length);
+  const engRate = profile.followersCount ? ((totalLikes + totalComments) / posts.length / profile.followersCount * 100).toFixed(2) : '–';
+
+  document.getElementById('statsBar').innerHTML = `
+    <div class="stat"><div class="num">${fmt(profile.followersCount)}</div><div class="label">粉絲</div></div>
+    <div class="stat"><div class="num">${fmt(profile.followsCount)}</div><div class="label">追蹤中</div></div>
+    <div class="stat"><div class="num">${posts.length}</div><div class="label">貼文數</div></div>
+    <div class="stat"><div class="num">${fmt(avgLikes)}</div><div class="label">平均讚數</div></div>
+    <div class="stat"><div class="num">${fmt(avgComments)}</div><div class="label">平均留言</div></div>
+    <div class="stat"><div class="num">${engRate}%</div><div class="label">互動率</div></div>
+  `;
+
+  // Charts
+  buildCharts(posts);
+
+  // Grid
+  let currentType = 'all';
+  let currentSort = 'date-desc';
+  let currentSearch = '';
+
+  function render() {
+    let filtered = posts.filter(p => {
+      if (currentType !== 'all' && p.type !== currentType) return false;
+      if (currentSearch) {
+        const q = currentSearch.toLowerCase();
+        const cap = (p.caption || '').toLowerCase();
+        if (!cap.includes(q)) return false;
+      }
+      return true;
+    });
+
+    filtered.sort((a, b) => {
+      if (currentSort === 'date-desc') return new Date(b.timestamp) - new Date(a.timestamp);
+      if (currentSort === 'date-asc') return new Date(a.timestamp) - new Date(b.timestamp);
+      if (currentSort === 'likes-desc') return (b.likesCount||0) - (a.likesCount||0);
+      if (currentSort === 'comments-desc') return (b.commentsCount||0) - (a.commentsCount||0);
+    });
+
+    const grid = document.getElementById('grid');
+    if (filtered.length === 0) {
+      grid.innerHTML = '<div class="empty">沒有符合的貼文</div>';
+      return;
+    }
+
+    grid.innerHTML = filtered.map(p => {
+      const img = p.displayUrl || (p.childPosts && p.childPosts[0] && p.childPosts[0].displayUrl) || '';
+      const date = p.timestamp ? new Date(p.timestamp).toLocaleDateString('zh-TW', {year:'numeric',month:'short',day:'numeric'}) : '';
+      const tags = (p.hashtags || []).slice(0,5).map(h => `<span class="hashtag">#${h}</span>`).join('');
+      const typeLabel = p.type === 'Sidecar' ? '多圖' : p.type === 'Video' ? '影片' : '圖片';
+      const caption = (p.caption || '').replace(/\n/g, ' ');
+
+      return `
+        <div class="card">
+          ${img
+            ? `<img class="card-img" src="${img}" loading="lazy" onerror="this.parentNode.querySelector('.card-img-placeholder') && (this.style.display='none')">`
+            : `<div class="card-img-placeholder">📷</div>`}
+          <div class="card-body">
+            <span class="type-badge type-${p.type}">${typeLabel}</span>
+            <div class="card-meta">
+              <span>❤️ <span class="num">${fmt(p.likesCount)}</span></span>
+              <span>💬 <span class="num">${fmt(p.commentsCount)}</span></span>
+            </div>
+            <div class="card-caption">${caption || '<em style="color:#aaa">無文字</em>'}</div>
+            ${tags ? `<div class="card-hashtags">${tags}</div>` : ''}
+            <div class="card-date">${date}</div>
+            <a class="card-link" href="${p.url}" target="_blank">在 Instagram 查看 →</a>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  document.getElementById('sortSelect').addEventListener('change', e => { currentSort = e.target.value; render(); });
+  document.getElementById('searchInput').addEventListener('input', e => { currentSearch = e.target.value; render(); });
+  document.querySelectorAll('.tag[data-type]').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.tag[data-type]').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      currentType = t.dataset.type;
+      render();
+    });
+  });
+
+  render();
+}
+
+function buildCharts(posts) {
+  // By day of week
+  const days = ['日','一','二','三','四','五','六'];
+  const dayCount = Array(7).fill(0);
+  const dayLikes = Array(7).fill(0);
+  posts.forEach(p => {
+    const d = new Date(p.timestamp).getDay();
+    dayCount[d]++;
+    dayLikes[d] += p.likesCount || 0;
+  });
+  const maxCount = Math.max(...dayCount);
+
+  // By month
+  const monthMap = {};
+  posts.forEach(p => {
+    const key = new Date(p.timestamp).toLocaleDateString('zh-TW', {year:'numeric', month:'short'});
+    monthMap[key] = (monthMap[key] || 0) + 1;
+  });
+  const months = Object.entries(monthMap).sort((a,b) => a[0].localeCompare(b[0]));
+  const maxMonth = Math.max(...months.map(m=>m[1]));
+
+  const avgDayLikes = dayCount.map((c,i) => c > 0 ? Math.round(dayLikes[i]/c) : 0);
+  const maxAvgLikes = Math.max(...avgDayLikes);
+
+  document.getElementById('charts').innerHTML = `
+    <div class="chart-box">
+      <h3>📅 每週發文分布</h3>
+      ${days.map((d,i) => `
+        <div class="bar-row">
+          <div class="bar-label">週${d}</div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:${maxCount ? dayCount[i]/maxCount*100 : 0}%">
+              <span>${dayCount[i]} 篇</span>
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="chart-box">
+      <h3>❤️ 各星期平均讚數</h3>
+      ${days.map((d,i) => `
+        <div class="bar-row">
+          <div class="bar-label">週${d}</div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:${maxAvgLikes ? avgDayLikes[i]/maxAvgLikes*100 : 0}%; background: linear-gradient(90deg, #e91e8c, #f06292)">
+              <span>${fmt(avgDayLikes[i])}</span>
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="chart-box" style="grid-column: 1/-1">
+      <h3>📆 每月發文數</h3>
+      ${months.map(([m,c]) => `
+        <div class="bar-row">
+          <div class="bar-label" style="width:80px">${m}</div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:${maxMonth ? c/maxMonth*100 : 0}%; background: linear-gradient(90deg, #4f46e5, #818cf8)">
+              <span>${c} 篇</span>
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function fmt(n) {
+  if (n == null || n === undefined) return '–';
+  if (n >= 1000000) return (n/1000000).toFixed(1) + 'M';
+  if (n >= 1000) return (n/1000).toFixed(1) + 'K';
+  return n.toString();
+}
+</script>
+</body>
+</html>
