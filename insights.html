@@ -7,58 +7,58 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 * { box-sizing:border-box; margin:0; padding:0; }
-body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:#f5f5f7; color:#1a1a1a; }
+body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:#F5EFE6; color:#2C1E0F; }
 
-.header { background:#fff; padding:20px 28px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center; }
+.header { background:#FDFAF5; padding:20px 28px; border-bottom:1px solid #E5D9C8; display:flex; justify-content:space-between; align-items:center; }
 .header h1 { font-size:18px; font-weight:700; }
-.header p { font-size:12px; color:#999; margin-top:3px; }
-.back-link { font-size:12px; color:#0095f6; text-decoration:none; }
+.header p { font-size:12px; color:#9B8670; margin-top:3px; }
+.back-link { font-size:12px; color:#B87030; text-decoration:none; }
 
-.tabs { background:#fff; border-bottom:1px solid #eee; display:flex; padding:0 28px; }
-.tab-btn { padding:12px 18px; font-size:13px; font-weight:600; color:#999; border:none; background:none; cursor:pointer; border-bottom:2px solid transparent; transition:all .2s; }
-.tab-btn.active { color:#1a1a1a; border-bottom-color:#1a1a1a; }
+.tabs { background:#FDFAF5; border-bottom:1px solid #E5D9C8; display:flex; padding:0 28px; }
+.tab-btn { padding:12px 18px; font-size:13px; font-weight:600; color:#9B8670; border:none; background:none; cursor:pointer; border-bottom:2px solid transparent; transition:all .2s; }
+.tab-btn.active { color:#2C1E0F; border-bottom-color:#2C1E0F; }
 
-.filter-bar { background:#fff; border-bottom:1px solid #eee; padding:10px 28px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-.filter-label { font-size:12px; font-weight:600; color:#888; }
-.brand-chip { display:flex; align-items:center; gap:5px; padding:4px 10px 4px 6px; border-radius:20px; border:1px solid #e5e5e5; background:#fff; font-size:11px; font-weight:600; cursor:pointer; transition:all .15s; color:#fff; }
+.filter-bar { background:#FDFAF5; border-bottom:1px solid #E5D9C8; padding:10px 28px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.filter-label { font-size:12px; font-weight:600; color:#8B7355; }
+.brand-chip { display:flex; align-items:center; gap:5px; padding:4px 10px 4px 6px; border-radius:20px; border:1px solid #e5e5e5; background:#FDFAF5; font-size:11px; font-weight:600; cursor:pointer; transition:all .15s; color:#fff; }
 .brand-chip img { width:18px; height:18px; border-radius:50%; object-fit:cover; }
 .brand-chip:not(.active) { opacity:.4; }
 
 .tab-content { display:none; padding:20px 28px; }
 .tab-content.active { display:block; }
 
-.card { background:#fff; border-radius:16px; border:1px solid #eee; padding:18px; }
-.card h3 { font-size:12px; font-weight:600; color:#888; text-transform:uppercase; letter-spacing:.4px; margin-bottom:14px; }
-.full-card { background:#fff; border-radius:16px; border:1px solid #eee; padding:18px; margin-bottom:20px; }
-.full-card h3 { font-size:12px; font-weight:600; color:#888; text-transform:uppercase; letter-spacing:.4px; margin-bottom:14px; }
+.card { background:#FDFAF5; border-radius:16px; border:1px solid #E5D9C8; padding:18px; }
+.card h3 { font-size:12px; font-weight:600; color:#8B7355; text-transform:uppercase; letter-spacing:.4px; margin-bottom:14px; }
+.full-card { background:#FDFAF5; border-radius:16px; border:1px solid #E5D9C8; padding:18px; margin-bottom:20px; }
+.full-card h3 { font-size:12px; font-weight:600; color:#8B7355; text-transform:uppercase; letter-spacing:.4px; margin-bottom:14px; }
 .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px; }
 
 .heatmap-wrap { overflow-x:auto; }
 .heatmap { border-collapse:collapse; font-size:10px; min-width:700px; width:100%; }
-.heatmap th { padding:3px 4px; color:#aaa; font-weight:500; text-align:center; font-size:9px; }
-.heatmap th.row-header { text-align:left; padding-right:8px; color:#888; white-space:nowrap; }
+.heatmap th { padding:3px 4px; color:#A89070; font-weight:500; text-align:center; font-size:9px; }
+.heatmap th.row-header { text-align:left; padding-right:8px; color:#8B7355; white-space:nowrap; }
 .heatmap td { width:30px; height:26px; text-align:center; border-radius:3px; font-size:9px; font-weight:600; cursor:default; transition:transform .1s; }
 .heatmap td:hover { transform:scale(1.2); z-index:10; position:relative; }
 
 .htag-table { width:100%; border-collapse:collapse; font-size:12px; }
-.htag-table th { text-align:left; padding:6px 10px; color:#aaa; font-size:11px; font-weight:600; border-bottom:1px solid #f0f0f0; }
-.htag-table td { padding:6px 10px; border-bottom:1px solid #f8f8f8; }
+.htag-table th { text-align:left; padding:6px 10px; color:#A89070; font-size:11px; font-weight:600; border-bottom:1px solid #E5D9C8; }
+.htag-table td { padding:6px 10px; border-bottom:1px solid #EDE5D8; }
 .htag-table tr:last-child td { border-bottom:none; }
-.eng-val { font-weight:700; color:#16a34a; }
+.eng-val { font-weight:700; color:#5A7A3A; }
 
 .day-bars { display:flex; flex-direction:column; gap:6px; }
 .day-bar-row { display:flex; align-items:center; gap:8px; }
-.day-name { font-size:11px; color:#888; width:22px; text-align:right; flex-shrink:0; }
-.day-bar-track { flex:1; background:#f0f0f0; border-radius:4px; height:18px; overflow:hidden; }
+.day-name { font-size:11px; color:#8B7355; width:22px; text-align:right; flex-shrink:0; }
+.day-bar-track { flex:1; background:#EDE5D8; border-radius:4px; height:18px; overflow:hidden; }
 .day-bar-fill { height:100%; border-radius:4px; display:flex; align-items:center; padding-left:6px; }
 .day-bar-fill span { font-size:10px; color:#fff; font-weight:600; white-space:nowrap; }
 
 .time-pills { display:flex; flex-wrap:wrap; gap:8px; }
-.time-pill { background:#f5f5f7; border-radius:10px; padding:10px 14px; min-width:120px; }
+.time-pill { background:#F5EFE6; border-radius:10px; padding:10px 14px; min-width:120px; }
 .time-pill .brand-row { display:flex; align-items:center; gap:6px; margin-bottom:4px; }
 .time-pill .brand-row img { width:18px; height:18px; border-radius:50%; }
 .time-pill .best-val { font-size:18px; font-weight:800; }
-.time-pill .best-label { font-size:10px; color:#aaa; }
+.time-pill .best-label { font-size:10px; color:#A89070; }
 
 canvas { max-height:240px; }
 
@@ -96,7 +96,7 @@ canvas { max-height:240px; }
     <div class="heatmap-wrap">
       <table class="heatmap" id="heatmapTable"></table>
     </div>
-    <p style="font-size:10px;color:#ccc;margin-top:8px">顏色越深 = 互動率越高。灰色格 = 無資料。</p>
+    <p style="font-size:10px;color:#C4B09A;margin-top:8px">顏色越深 = 互動率越高。灰色格 = 無資料。</p>
   </div>
   <div class="grid2">
     <div class="card">
@@ -319,12 +319,12 @@ function renderHashtag() {
   byFreq.forEach(([tag,v],i) => {
     const w = Math.round(v.count/maxC*80);
     freqHtml += `<tr>
-      <td style="color:#ccc;width:24px">${i+1}</td>
+      <td style="color:#C4B09A;width:24px">${i+1}</td>
       <td style="font-weight:600">#${tag}</td>
       <td><div style="display:flex;align-items:center;gap:6px">
         <div style="width:${w}px;height:5px;background:#0095f6;border-radius:3px;opacity:.7"></div>${v.count}
       </div></td>
-      <td style="color:#aaa">${v.brands.size}</td>
+      <td style="color:#A89070">${v.brands.size}</td>
     </tr>`;
   });
   document.getElementById('htagFreqTable').innerHTML = freqHtml;
@@ -339,13 +339,13 @@ function renderHashtag() {
   byEng.forEach(([tag,eng,cnt],i) => {
     const w = Math.round(eng/maxE*80);
     engHtml += `<tr>
-      <td style="color:#ccc;width:24px">${i+1}</td>
+      <td style="color:#C4B09A;width:24px">${i+1}</td>
       <td style="font-weight:600">#${tag}</td>
       <td><div style="display:flex;align-items:center;gap:6px">
         <div style="width:${w}px;height:5px;background:#10b981;border-radius:3px;opacity:.8"></div>
         <span class="eng-val">${eng.toFixed(2)}%</span>
       </div></td>
-      <td style="color:#aaa">${cnt}</td>
+      <td style="color:#A89070">${cnt}</td>
     </tr>`;
   });
   document.getElementById('htagEngTable').innerHTML = engHtml;
@@ -369,11 +369,11 @@ function renderHashtag() {
       return `<tr>
         <td style="padding:4px 8px;font-size:11px">#${tag}</td>
         <td style="padding:4px 4px"><div style="width:${w}px;height:5px;background:${b.color};border-radius:3px;opacity:.7"></div></td>
-        <td style="padding:4px 6px;font-size:11px;color:#aaa">${v.count}次</td>
-        <td style="padding:4px 8px;font-size:11px;font-weight:700;color:#16a34a">${eng}%</td>
+        <td style="padding:4px 6px;font-size:11px;color:#A89070">${v.count}次</td>
+        <td style="padding:4px 8px;font-size:11px;font-weight:700;color:#5A7A3A">${eng}%</td>
       </tr>`;
     }).join('');
-    grid.innerHTML += `<div style="background:#fff;border-radius:14px;border:1px solid #eee;padding:14px">
+    grid.innerHTML += `<div style="background:#FDFAF5;border-radius:14px;border:1px solid #E5D9C8;padding:14px">
       <div style="display:flex;align-items:center;gap:7px;margin-bottom:10px">
         ${LOGOS[key]?`<img src="${LOGOS[key]}" style="width:22px;height:22px;border-radius:50%">`:''}<span style="font-size:12px;font-weight:700;color:${b.color}">${b.name}</span>
       </div>
@@ -431,16 +431,16 @@ function renderVideo() {
   const top8 = [...allVideos].sort((a,z)=>z.videoPlayCount-a.videoPlayCount).slice(0,8);
   const fmt = n => n>=1000?(n/1000).toFixed(1)+'K':n;
   document.getElementById('topVideos').innerHTML = top8.map(p => `
-    <div style="background:#fff;border-radius:12px;border:1px solid #eee;width:170px;flex-shrink:0;overflow:hidden">
-      ${p.img?`<img src="${p.img}" style="width:100%;height:130px;object-fit:cover;display:block;background:#f0f0f0">`:'<div style="width:100%;height:130px;background:#f0f0f0"></div>'}
+    <div style="background:#FDFAF5;border-radius:12px;border:1px solid #E5D9C8;width:170px;flex-shrink:0;overflow:hidden">
+      ${p.img?`<img src="${p.img}" style="width:100%;height:130px;object-fit:cover;display:block;background:#EDE5D8">`:'<div style="width:100%;height:130px;background:#EDE5D8"></div>'}
       <div style="padding:10px">
         <div style="display:flex;align-items:center;gap:5px;margin-bottom:4px">
           ${LOGOS[p.key]?`<img src="${LOGOS[p.key]}" style="width:16px;height:16px;border-radius:50%">`:''}<span style="font-size:10px;font-weight:700;color:${p.brandColor}">${p.brandName}</span>
         </div>
         <div style="font-size:15px;font-weight:800">▶ ${fmt(p.videoPlayCount)}</div>
-        <div style="font-size:10px;color:#aaa">互動率 ${p.eng.toFixed(2)}% · ${p.date}</div>
-        <div style="font-size:10px;color:#555;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.caption||'–'}</div>
-        <a href="${p.url}" target="_blank" style="font-size:10px;color:#0095f6;text-decoration:none;display:block;margin-top:4px">查看 →</a>
+        <div style="font-size:10px;color:#A89070">互動率 ${p.eng.toFixed(2)}% · ${p.date}</div>
+        <div style="font-size:10px;color:#5C4A32;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.caption||'–'}</div>
+        <a href="${p.url}" target="_blank" style="font-size:10px;color:#B87030;text-decoration:none;display:block;margin-top:4px">查看 →</a>
       </div>
     </div>`).join('');
 }

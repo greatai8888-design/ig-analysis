@@ -7,45 +7,45 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 * { box-sizing:border-box; margin:0; padding:0; }
-body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:#f5f5f7; color:#1a1a1a; }
+body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:#F5EFE6; color:#2C1E0F; }
 
-.header { background:#fff; padding:20px 28px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center; }
+.header { background:#FDFAF5; padding:20px 28px; border-bottom:1px solid #E5D9C8; display:flex; justify-content:space-between; align-items:center; }
 .header h1 { font-size:18px; font-weight:700; }
-.header p { font-size:12px; color:#999; margin-top:3px; }
-.back-link { font-size:12px; color:#0095f6; text-decoration:none; }
+.header p { font-size:12px; color:#9B8670; margin-top:3px; }
+.back-link { font-size:12px; color:#B87030; text-decoration:none; }
 
 /* Filter bar */
-.filter-bar { background:#fff; border-bottom:1px solid #eee; padding:10px 28px; display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
-.filter-label { font-size:12px; font-weight:600; color:#888; white-space:nowrap; }
+.filter-bar { background:#FDFAF5; border-bottom:1px solid #E5D9C8; padding:10px 28px; display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+.filter-label { font-size:12px; font-weight:600; color:#8B7355; white-space:nowrap; }
 .brand-chip { display:flex; align-items:center; gap:5px; padding:4px 10px 4px 6px; border-radius:20px; border:1px solid #e5e5e5; font-size:11px; font-weight:600; cursor:pointer; transition:all .15s; color:#fff; }
 .brand-chip img { width:18px; height:18px; border-radius:50%; object-fit:cover; }
 .brand-chip:not(.active) { opacity:.4; }
 .metric-toggle { display:flex; gap:4px; margin-left:auto; }
-.metric-btn { padding:5px 12px; border-radius:20px; border:1px solid #e5e5e5; background:#fff; font-size:11px; font-weight:600; color:#555; cursor:pointer; }
-.metric-btn.active { background:#1a1a1a; color:#fff; border-color:#1a1a1a; }
+.metric-btn { padding:5px 12px; border-radius:20px; border:1px solid #e5e5e5; background:#FDFAF5; font-size:11px; font-weight:600; color:#5C4A32; cursor:pointer; }
+.metric-btn.active { background:#5C3D2E; color:#fff; border-color:#2C1E0F; }
 
 /* KPI row */
 .kpi-row { display:flex; gap:12px; padding:16px 28px; flex-wrap:wrap; overflow-x:auto; }
-.kpi { background:#fff; border-radius:14px; border:1px solid #eee; padding:14px 18px; min-width:140px; flex:1; }
+.kpi { background:#FDFAF5; border-radius:14px; border:1px solid #E5D9C8; padding:14px 18px; min-width:140px; flex:1; }
 .kpi-brand { display:flex; align-items:center; gap:6px; margin-bottom:6px; }
 .kpi-brand img { width:20px; height:20px; border-radius:50%; }
 .kpi-brand span { font-size:11px; font-weight:700; }
 .kpi-val { font-size:24px; font-weight:800; }
-.kpi-sub { font-size:10px; color:#aaa; margin-top:2px; }
+.kpi-sub { font-size:10px; color:#A89070; margin-top:2px; }
 .kpi-trend { font-size:11px; font-weight:600; margin-top:4px; }
 
 /* Charts */
 .chart-section { padding:0 28px 20px; }
-.chart-box { background:#fff; border-radius:16px; border:1px solid #eee; padding:18px; margin-bottom:16px; }
-.chart-box h3 { font-size:12px; font-weight:600; color:#888; text-transform:uppercase; letter-spacing:.4px; margin-bottom:14px; }
+.chart-box { background:#FDFAF5; border-radius:16px; border:1px solid #E5D9C8; padding:18px; margin-bottom:16px; }
+.chart-box h3 { font-size:12px; font-weight:600; color:#8B7355; text-transform:uppercase; letter-spacing:.4px; margin-bottom:14px; }
 .chart-box canvas { max-height:280px; }
 
 /* Weekly table */
 .week-table { width:100%; border-collapse:collapse; font-size:12px; }
-.week-table th { padding:8px 12px; text-align:left; color:#aaa; font-size:11px; font-weight:600; border-bottom:2px solid #f0f0f0; white-space:nowrap; }
-.week-table td { padding:7px 12px; border-bottom:1px solid #f8f8f8; }
+.week-table th { padding:8px 12px; text-align:left; color:#A89070; font-size:11px; font-weight:600; border-bottom:2px solid #E5D9C8; white-space:nowrap; }
+.week-table td { padding:7px 12px; border-bottom:1px solid #EDE5D8; }
 .week-table tr:last-child td { border-bottom:none; }
-.week-table tr:hover td { background:#fafafa; }
+.week-table tr:hover td { background:#F7F1E8; }
 .rank-badge { display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:50%; font-size:10px; font-weight:700; }
 
 @media(max-width:768px) {
@@ -281,10 +281,10 @@ function renderWeekTable() {
     });
     const maxEng = Math.max(...weekEngs.filter(v=>v!=null));
 
-    html += `<tr><td style="font-weight:600;color:#888;white-space:nowrap">${label}</td>` +
+    html += `<tr><td style="font-weight:600;color:#8B7355;white-space:nowrap">${label}</td>` +
       brandList.map((b, i) => {
         const d = (brandWeeks[b.key] || {})[w];
-        if (!d) return '<td style="color:#ddd">–</td>';
+        if (!d) return '<td style="color:#D4C4B0">–</td>';
         const eng = d.engSum/d.n;
         const isTop = Math.abs(eng - maxEng) < 0.001;
         const val = currentMetric === 'eng'   ? eng.toFixed(2)+'%'

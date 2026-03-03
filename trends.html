@@ -7,42 +7,42 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 * { box-sizing:border-box; margin:0; padding:0; }
-body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:#f5f5f7; color:#1a1a1a; }
-.header { background:#fff; padding:20px 28px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center; }
+body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:#F5EFE6; color:#2C1E0F; }
+.header { background:#FDFAF5; padding:20px 28px; border-bottom:1px solid #E5D9C8; display:flex; justify-content:space-between; align-items:center; }
 .header h1 { font-size:18px; font-weight:700; }
-.header p { font-size:12px; color:#999; margin-top:3px; }
-.back-link { font-size:12px; color:#0095f6; text-decoration:none; }
+.header p { font-size:12px; color:#9B8670; margin-top:3px; }
+.back-link { font-size:12px; color:#B87030; text-decoration:none; }
 
-.filter-bar { background:#fff; border-bottom:1px solid #eee; padding:10px 28px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-.filter-label { font-size:12px; font-weight:600; color:#888; white-space:nowrap; }
+.filter-bar { background:#FDFAF5; border-bottom:1px solid #E5D9C8; padding:10px 28px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.filter-label { font-size:12px; font-weight:600; color:#8B7355; white-space:nowrap; }
 .region-toggle { display:flex; gap:4px; }
-.region-btn { padding:5px 14px; border-radius:20px; border:1px solid #e5e5e5; background:#fff; font-size:11px; font-weight:600; color:#555; cursor:pointer; }
-.region-btn.active { background:#1a1a1a; color:#fff; border-color:#1a1a1a; }
+.region-btn { padding:5px 14px; border-radius:20px; border:1px solid #e5e5e5; background:#FDFAF5; font-size:11px; font-weight:600; color:#5C4A32; cursor:pointer; }
+.region-btn.active { background:#5C3D2E; color:#fff; border-color:#2C1E0F; }
 .kw-chips { display:flex; gap:6px; flex-wrap:wrap; }
 .kw-chip { padding:4px 12px; border-radius:20px; border:2px solid; font-size:11px; font-weight:600; cursor:pointer; transition:opacity .15s; }
 .kw-chip:not(.active) { opacity:.35; }
 
 .content { padding:20px 28px; }
-.card { background:#fff; border-radius:16px; border:1px solid #eee; padding:18px; margin-bottom:16px; }
-.card h3 { font-size:12px; font-weight:600; color:#888; text-transform:uppercase; letter-spacing:.4px; margin-bottom:14px; }
+.card { background:#FDFAF5; border-radius:16px; border:1px solid #E5D9C8; padding:18px; margin-bottom:16px; }
+.card h3 { font-size:12px; font-weight:600; color:#8B7355; text-transform:uppercase; letter-spacing:.4px; margin-bottom:14px; }
 .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
 canvas { max-height:260px; }
 
 .kpi-row { display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
-.kpi { background:#fff; border-radius:14px; border:1px solid #eee; padding:14px 18px; flex:1; min-width:130px; }
+.kpi { background:#FDFAF5; border-radius:14px; border:1px solid #E5D9C8; padding:14px 18px; flex:1; min-width:130px; }
 .kpi-label { font-size:11px; font-weight:700; margin-bottom:4px; }
 .kpi-val { font-size:26px; font-weight:800; }
-.kpi-sub { font-size:10px; color:#aaa; margin-top:2px; }
+.kpi-sub { font-size:10px; color:#A89070; margin-top:2px; }
 .kpi-trend { font-size:11px; font-weight:600; margin-top:4px; }
 
 .related-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
-.related-box { background:#f8f8f8; border-radius:10px; padding:12px; }
-.related-box h4 { font-size:11px; font-weight:700; margin-bottom:8px; color:#555; }
+.related-box { background:#F7F1E8; border-radius:10px; padding:12px; }
+.related-box h4 { font-size:11px; font-weight:700; margin-bottom:8px; color:#5C4A32; }
 .related-item { display:flex; align-items:center; gap:8px; margin-bottom:5px; }
 .related-item .bar { height:5px; border-radius:3px; flex-shrink:0; }
 .related-item .qtext { font-size:11px; color:#333; }
 
-.note { font-size:10px; color:#aaa; margin-top:8px; }
+.note { font-size:10px; color:#A89070; margin-top:8px; }
 
 @media(max-width:768px) {
   .grid2,.related-grid { grid-template-columns:1fr; }
