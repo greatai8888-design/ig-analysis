@@ -3,350 +3,885 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sunny's Work Board ☀️</title>
+<title>Sunny's Board ☀️</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    background: #F5EFE6;
-    min-height: 100vh;
-    padding: 24px;
-  }
-  .header {
-    text-align: center;
-    margin-bottom: 28px;
-  }
-  .header h1 {
-    font-size: 26px;
-    font-weight: 700;
-    color: #3a2a1a;
-    letter-spacing: 0.5px;
-  }
-  .header p {
-    color: #7a6a5a;
-    font-size: 13px;
-    margin-top: 6px;
-  }
-  .board {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-  .column {
-    background: #EDE4D8;
-    border-radius: 14px;
-    padding: 16px;
-    min-height: 300px;
-  }
-  .col-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 14px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid rgba(0,0,0,0.08);
-  }
-  .col-header h2 {
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 0.8px;
-    text-transform: uppercase;
-    color: #3a2a1a;
-  }
-  .badge {
-    background: rgba(0,0,0,0.1);
-    border-radius: 20px;
-    padding: 2px 8px;
-    font-size: 11px;
-    font-weight: 700;
-    color: #3a2a1a;
-    margin-left: auto;
-  }
-  .card {
-    background: #FDFAF5;
-    border-radius: 10px;
-    padding: 13px 14px;
-    margin-bottom: 10px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.07);
-    border-left: 4px solid #ddd;
-    cursor: default;
-  }
-  .card:hover { box-shadow: 0 3px 10px rgba(0,0,0,0.1); }
-  .card-title {
-    font-size: 13px;
-    font-weight: 600;
-    color: #2a1a0a;
-    margin-bottom: 5px;
-    line-height: 1.4;
-  }
-  .card-desc {
-    font-size: 11.5px;
-    color: #7a6a5a;
-    line-height: 1.5;
-  }
-  .card-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    margin-top: 8px;
-  }
-  .tag {
-    background: #e8ddd0;
-    color: #5a4a3a;
-    border-radius: 20px;
-    padding: 2px 8px;
-    font-size: 10px;
-    font-weight: 600;
-  }
-  /* Column colors */
-  .col-todo .col-header h2 { color: #7a5a3a; }
-  .col-todo .card { border-left-color: #C8A800; }
-  .col-doing .col-header h2 { color: #1a5a8a; }
-  .col-doing .card { border-left-color: #2196F3; }
-  .col-done .col-header h2 { color: #1a6a3a; }
-  .col-done .card { border-left-color: #4CAF50; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-  .col-doing { background: #E3ECF5; }
-  .col-done { background: #E3F0E5; }
+:root {
+  --sidebar-bg: #1a1a2e;
+  --sidebar-hover: #2a2a4a;
+  --sidebar-text: #b0b0d0;
+  --sidebar-active: #7c6af8;
+  --bg: #f8f9fc;
+  --card-bg: #ffffff;
+  --border: #e5e7eb;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  --urgent: #f44336;
+  --high: #ff9800;
+  --normal: #2196f3;
+  --low: #9e9e9e;
+  --todo-color: #6b7280;
+  --doing-color: #7c6af8;
+  --review-color: #f59e0b;
+  --done-color: #10b981;
+}
 
-  .date-tag {
-    font-size: 10px;
-    color: #aaa;
-    float: right;
-    margin-top: 2px;
-  }
-  .emoji { font-size: 15px; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  font-size: 13px;
+}
 
-  @media (max-width: 768px) {
-    .board { grid-template-columns: 1fr; }
-  }
+/* ── Sidebar ── */
+.sidebar {
+  width: 220px;
+  min-width: 220px;
+  background: var(--sidebar-bg);
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow-y: auto;
+}
+.sidebar-logo {
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.sidebar-logo .logo-icon {
+  width: 28px; height: 28px;
+  background: linear-gradient(135deg, #7c6af8, #a78bfa);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; color: white;
+}
+.sidebar-logo span {
+  color: white;
+  font-weight: 700;
+  font-size: 14px;
+}
+.sidebar-section {
+  padding: 10px 0;
+}
+.sidebar-section-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 4px 18px 6px;
+}
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 18px;
+  color: var(--sidebar-text);
+  cursor: pointer;
+  transition: background 0.15s;
+  border-radius: 0;
+}
+.sidebar-item:hover { background: var(--sidebar-hover); }
+.sidebar-item.active {
+  background: rgba(124,106,248,0.2);
+  color: #a78bfa;
+}
+.sidebar-item .icon { font-size: 14px; width: 18px; text-align: center; }
+.sidebar-item .label { font-size: 12.5px; }
+.sidebar-item .count {
+  margin-left: auto;
+  background: rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.5);
+  border-radius: 10px;
+  padding: 1px 7px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* ── Main ── */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Topbar ── */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  background: white;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.topbar h1 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-right: 4px;
+}
+.view-tabs {
+  display: flex;
+  gap: 2px;
+  background: var(--bg);
+  border-radius: 8px;
+  padding: 3px;
+  border: 1px solid var(--border);
+}
+.view-tab {
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+.view-tab.active {
+  background: white;
+  color: var(--text-primary);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.topbar-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s;
+}
+.btn-outline {
+  background: white;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+.btn-outline:hover { background: var(--bg); }
+.btn-primary {
+  background: #7c6af8;
+  color: white;
+}
+.btn-primary:hover { background: #6d5de0; }
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 5px 10px;
+}
+.search-bar input {
+  border: none;
+  background: none;
+  outline: none;
+  font-size: 12px;
+  color: var(--text-primary);
+  width: 160px;
+}
+.search-bar input::placeholder { color: var(--text-muted); }
+
+/* ── Filters ── */
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  background: white;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.filter-label { font-size: 11.5px; color: var(--text-secondary); font-weight: 600; }
+.filter-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: white;
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.filter-chip:hover { border-color: #7c6af8; color: #7c6af8; }
+.filter-chip.active { background: #ede9fe; border-color: #7c6af8; color: #7c6af8; }
+
+/* ── Board ── */
+.board-container {
+  flex: 1;
+  overflow-x: auto;
+  padding: 20px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.column {
+  min-width: 280px;
+  width: 280px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+}
+
+.col-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px 8px 0 0;
+  background: white;
+  border: 1px solid var(--border);
+  border-bottom: none;
+}
+.col-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.col-name {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  flex: 1;
+}
+.col-count {
+  background: var(--bg);
+  color: var(--text-muted);
+  border-radius: 10px;
+  padding: 1px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid var(--border);
+}
+
+.cards-area {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  padding: 8px;
+  min-height: 100px;
+  transition: background 0.15s;
+}
+.cards-area.drag-over { background: #ede9fe; }
+
+.add-card-btn {
+  width: 100%;
+  padding: 8px;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font-size: 12px;
+  cursor: pointer;
+  text-align: left;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 4px;
+  transition: all 0.15s;
+}
+.add-card-btn:hover { background: var(--card-bg); color: var(--text-secondary); }
+
+/* ── Cards ── */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 8px;
+  cursor: grab;
+  transition: all 0.15s;
+  position: relative;
+}
+.card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transform: translateY(-1px);
+  border-color: #d1d5db;
+}
+.card.dragging { opacity: 0.4; cursor: grabbing; }
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin-bottom: 8px;
+}
+.priority-flag {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.priority-flag.urgent { background: var(--urgent); }
+.priority-flag.high { background: var(--high); }
+.priority-flag.normal { background: var(--normal); }
+.priority-flag.low { background: var(--low); }
+
+.card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.4;
+  flex: 1;
+}
+.card-desc {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+.card-tag {
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 10.5px;
+  font-weight: 600;
+}
+.tag-purple { background: #ede9fe; color: #7c3aed; }
+.tag-blue { background: #dbeafe; color: #1d4ed8; }
+.tag-green { background: #d1fae5; color: #065f46; }
+.tag-yellow { background: #fef9c3; color: #92400e; }
+.tag-red { background: #fee2e2; color: #991b1b; }
+.tag-gray { background: #f3f4f6; color: #374151; }
+.tag-orange { background: #ffedd5; color: #9a3412; }
+
+.card-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.assignee {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7c6af8, #a78bfa);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.due-date {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.due-date.overdue { color: var(--urgent); }
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* Subtask progress */
+.subtask-bar {
+  height: 3px;
+  background: #e5e7eb;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+.subtask-fill {
+  height: 100%;
+  background: #10b981;
+  border-radius: 10px;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+
+/* modal */
+.modal-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  width: 480px;
+  max-width: 95vw;
+}
+.modal h3 { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+.modal input, .modal textarea, .modal select {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 13px;
+  margin-bottom: 12px;
+  outline: none;
+  font-family: inherit;
+}
+.modal textarea { height: 80px; resize: vertical; }
+.modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 4px; }
 </style>
 </head>
 <body>
 
-<div class="header">
-  <h1>☀️ Sunny's Work Board</h1>
-  <p>Sunright Tea Studio · 更新於 2026-03-03</p>
-</div>
+<!-- Sidebar -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">☀️</div>
+    <span>Sunright</span>
+  </div>
 
-<div class="board">
-
-  <!-- TO DO -->
-  <div class="column col-todo">
-    <div class="col-header">
-      <span class="emoji">📋</span>
-      <h2>待辦</h2>
-      <span class="badge">5</span>
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">工作空間</div>
+    <div class="sidebar-item active">
+      <span class="icon">📋</span>
+      <span class="label">工作看板</span>
     </div>
-
-    <div class="card">
-      <div class="card-title">🎬 Sunright IG Story 腳本</div>
-      <div class="card-desc">7天旋轉框架設計完畢，等 Soma 確認本週腳本起始日與素材</div>
-      <div class="card-tags">
-        <span class="tag">行銷</span><span class="tag">IG Story</span>
-      </div>
+    <div class="sidebar-item" onclick="window.open('https://greatai8888-design.github.io/ig-analysis/')">
+      <span class="icon">📊</span>
+      <span class="label">競品 Dashboard</span>
     </div>
-
-    <div class="card">
-      <div class="card-title">🦁 Sunright 獅子吉祥物透明 PNG</div>
-      <div class="card-desc">確認 Soma 是否有透明底 logo，用於 Story 疊加合成</div>
-      <div class="card-tags">
-        <span class="tag">設計</span>
-      </div>
+    <div class="sidebar-item" onclick="window.open('https://greatai8888-design.github.io/ig-analysis/competitors.html')">
+      <span class="icon">🏆</span>
+      <span class="label">競品排名</span>
     </div>
-
-    <div class="card">
-      <div class="card-title">📦 Meta Ad Library 爬蟲</div>
-      <div class="card-desc">上次 Run 抓到 0 筆廣告，需要確認各品牌 Facebook 頁面名稱</div>
-      <div class="card-tags">
-        <span class="tag">競品分析</span><span class="tag">廣告</span>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">📸 Reels 縮圖修復</div>
-      <div class="card-desc">insights.html 影片區縮圖全部過期，需重新抓取並 base64 嵌入</div>
-      <div class="card-tags">
-        <span class="tag">Dashboard</span>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">📈 股票分析系統部署</div>
-      <div class="card-desc">daily_stock_analysis GitHub Actions 部署，使用 Anthropic API Key，需確認追蹤股票清單</div>
-      <div class="card-tags">
-        <span class="tag">股票</span><span class="tag">自動化</span>
-      </div>
+    <div class="sidebar-item" onclick="window.open('https://greatai8888-design.github.io/ig-analysis/engagement.html')">
+      <span class="icon">📈</span>
+      <span class="label">互動趨勢</span>
     </div>
   </div>
 
-  <!-- IN PROGRESS -->
-  <div class="column col-doing">
-    <div class="col-header">
-      <span class="emoji">⚡</span>
-      <h2>進行中</h2>
-      <span class="badge">2</span>
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">任務狀態</div>
+    <div class="sidebar-item" onclick="filterByStatus('all')">
+      <span class="icon">🗂️</span>
+      <span class="label">全部任務</span>
+      <span class="count" id="count-all">0</span>
     </div>
-
-    <div class="card">
-      <div class="card-title">📅 每日輕量爬蟲</div>
-      <div class="card-desc">每天 9am PST 抓 8 品牌最新 10 篇貼文，偵測爆款（互動率 > 3× 30天中位數）並 Telegram 通知</div>
-      <div class="card-tags">
-        <span class="tag">Cron 運行中</span><span class="tag">Apify</span>
-      </div>
+    <div class="sidebar-item" onclick="filterByStatus('todo')">
+      <span class="icon" style="color:#6b7280">●</span>
+      <span class="label">待辦</span>
+      <span class="count" id="count-todo">0</span>
     </div>
-
-    <div class="card">
-      <div class="card-title">📖 每日 IG Story 爬蟲</div>
-      <div class="card-desc">每天 8am PST 抓 8 品牌最新 Story，以 instaloader 登入執行</div>
-      <div class="card-tags">
-        <span class="tag">Cron 運行中</span><span class="tag">instaloader</span>
-      </div>
+    <div class="sidebar-item" onclick="filterByStatus('doing')">
+      <span class="icon" style="color:#7c6af8">●</span>
+      <span class="label">進行中</span>
+      <span class="count" id="count-doing">0</span>
     </div>
-  </div>
-
-  <!-- DONE -->
-  <div class="column col-done">
-    <div class="col-header">
-      <span class="emoji">✅</span>
-      <h2>已完成</h2>
-      <span class="badge">14</span>
-    </div>
-
-    <div class="card">
-      <div class="card-title">🏆 競品分析 Dashboard (6頁)</div>
-      <div class="card-desc">competitors / engagement / insights / growth / trends / dashboard 全部上線</div>
-      <div class="card-tags">
-        <span class="tag">GitHub Pages</span><span class="tag">8個品牌</span>
-      </div>
-      <span class="date-tag">2026-03-03</span>
-    </div>
-
-    <div class="card">
-      <div class="card-title">⭐ Sunright 品牌高亮</div>
-      <div class="card-desc">所有 dashboard 加入綠色左框線 + 背景色，標示「我的品牌」</div>
-      <div class="card-tags">
-        <span class="tag">UI</span>
-      </div>
-      <span class="date-tag">2026-03-03</span>
-    </div>
-
-    <div class="card">
-      <div class="card-title">🍵 銀座西川 品牌新增</div>
-      <div class="card-desc">爬取 100 篇貼文，品牌色 #C8102E，加入所有 dashboard</div>
-      <div class="card-tags">
-        <span class="tag">8th 品牌</span>
-      </div>
-      <span class="date-tag">2026-03-03</span>
-    </div>
-
-    <div class="card">
-      <div class="card-title">📅 週曆排程 (Cron)</div>
-      <div class="card-desc">每週一 9am PST 全量爬蟲 + 重建 dashboard + git push</div>
-      <div class="card-tags">
-        <span class="tag">自動化</span>
-      </div>
-      <span class="date-tag">2026-03-03</span>
-    </div>
-
-    <div class="card">
-      <div class="card-title">📊 Google Trends 整合</div>
-      <div class="card-desc">US + California 12個月週數據，trends.html 視覺化</div>
-      <div class="card-tags">
-        <span class="tag">pytrends</span>
-      </div>
-      <span class="date-tag">2026-03-03</span>
-    </div>
-
-    <div class="card">
-      <div class="card-title">🖼️ Top Posts 圖片 base64 嵌入</div>
-      <div class="card-desc">解決 CDN 連結過期問題，所有縮圖改為 base64 內嵌</div>
-      <div class="card-tags">
-        <span class="tag">效能</span>
-      </div>
-      <span class="date-tag">2026-03-03</span>
-    </div>
-
-    <div class="card">
-      <div class="card-title">📅 日期篩選器</div>
-      <div class="card-desc">competitors.html 加入 近7/30/60/90天、近1年、全部 預設選項</div>
-      <div class="card-tags">
-        <span class="tag">UX</span>
-      </div>
-      <span class="date-tag">2026-03-03</span>
-    </div>
-
-    <div class="card">
-      <div class="card-title">🎨 暖米色主題</div>
-      <div class="card-desc">#F5EFE6 背景 / #FDFAF5 卡片，全 6 頁統一風格</div>
-      <div class="card-tags">
-        <span class="tag">設計</span>
-      </div>
-      <span class="date-tag">2026-03-03</span>
-    </div>
-
-    <div class="card">
-      <div class="card-title">📰 x 軸修正 (週 → 日期)</div>
-      <div class="card-desc">engagement.html 週標籤從 "2025 W43" 改為 "2025/10/20"</div>
-      <div class="card-tags">
-        <span class="tag">BugFix</span>
-      </div>
-      <span class="date-tag">2026-03-03</span>
-    </div>
-
-    <div class="card">
-      <div class="card-title">🔑 IG 登入 Session</div>
-      <div class="card-desc">instaloader 登入成功，Session 存於 /tmp/ig_session，有自動重登邏輯</div>
-      <div class="card-tags">
-        <span class="tag">認證</span>
-      </div>
-      <span class="date-tag">2026-03-03</span>
-    </div>
-
-    <div class="card">
-      <div class="card-title">📦 粉絲追蹤歷史</div>
-      <div class="card-desc">follower_history.json 建立，記錄各品牌粉絲數變化</div>
-      <div class="card-tags">
-        <span class="tag">數據</span>
-      </div>
-      <span class="date-tag">2026-03-03</span>
-    </div>
-
-    <div class="card">
-      <div class="card-title">🧹 UG Tea 帳號更正</div>
-      <div class="card-desc">@ugtea_official → @ugtea_usa（3,826粉）資料全部修正</div>
-      <div class="card-tags">
-        <span class="tag">數據修正</span>
-      </div>
-      <span class="date-tag">2026-03-03</span>
-    </div>
-
-    <div class="card">
-      <div class="card-title">🌐 GitHub Pages 部署</div>
-      <div class="card-desc">greatai8888-design.github.io/ig-analysis/ 正式上線</div>
-      <div class="card-tags">
-        <span class="tag">部署</span>
-      </div>
-      <span class="date-tag">2026-03-03</span>
-    </div>
-
-    <div class="card">
-      <div class="card-title">👤 USER.md 更正</div>
-      <div class="card-desc">確認 Soma 的品牌是 Sunright Tea Studio（之前誤以為是 Omomo）</div>
-      <div class="card-tags">
-        <span class="tag">身份確認</span>
-      </div>
-      <span class="date-tag">2026-03-03</span>
+    <div class="sidebar-item" onclick="filterByStatus('done')">
+      <span class="icon" style="color:#10b981">●</span>
+      <span class="label">已完成</span>
+      <span class="count" id="count-done">0</span>
     </div>
   </div>
 
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">優先順序</div>
+    <div class="sidebar-item" onclick="filterByPriority('urgent')">
+      <span class="icon" style="color:#f44336">⚑</span>
+      <span class="label">緊急</span>
+    </div>
+    <div class="sidebar-item" onclick="filterByPriority('high')">
+      <span class="icon" style="color:#ff9800">⚑</span>
+      <span class="label">高</span>
+    </div>
+    <div class="sidebar-item" onclick="filterByPriority('normal')">
+      <span class="icon" style="color:#2196f3">⚑</span>
+      <span class="label">一般</span>
+    </div>
+    <div class="sidebar-item" onclick="filterByPriority('all')">
+      <span class="icon">↺</span>
+      <span class="label">全部顯示</span>
+    </div>
+  </div>
+</nav>
+
+<!-- Main -->
+<div class="main">
+  <!-- Topbar -->
+  <div class="topbar">
+    <h1>☀️ Sunny's Work Board</h1>
+    <div class="view-tabs">
+      <div class="view-tab active">📋 Board</div>
+      <div class="view-tab">📃 List</div>
+      <div class="view-tab">📅 Calendar</div>
+    </div>
+    <div class="topbar-right">
+      <div class="search-bar">
+        <span>🔍</span>
+        <input type="text" id="search-input" placeholder="搜尋任務..." oninput="filterBySearch(this.value)">
+      </div>
+      <button class="btn btn-outline" onclick="openModal()">＋ 新增任務</button>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <span class="filter-label">篩選：</span>
+    <div class="filter-chip active" onclick="toggleFilter(this,'all')">全部</div>
+    <div class="filter-chip" onclick="toggleFilter(this,'dashboard')">📊 Dashboard</div>
+    <div class="filter-chip" onclick="toggleFilter(this,'行銷')">📣 行銷</div>
+    <div class="filter-chip" onclick="toggleFilter(this,'自動化')">🤖 自動化</div>
+    <div class="filter-chip" onclick="toggleFilter(this,'設計')">🎨 設計</div>
+    <div class="filter-chip" onclick="toggleFilter(this,'競品分析')">🏆 競品分析</div>
+  </div>
+
+  <!-- Board -->
+  <div class="board-container" id="board">
+
+    <!-- Column: To Do -->
+    <div class="column" data-status="todo">
+      <div class="col-header">
+        <div class="col-dot" style="background:var(--todo-color)"></div>
+        <div class="col-name">待辦</div>
+        <div class="col-count" id="todo-count">0</div>
+      </div>
+      <div class="cards-area" id="col-todo"
+        ondragover="onDragOver(event)" ondrop="onDrop(event,'todo')" ondragleave="onDragLeave(event)">
+      </div>
+    </div>
+
+    <!-- Column: In Progress -->
+    <div class="column" data-status="doing">
+      <div class="col-header">
+        <div class="col-dot" style="background:var(--doing-color)"></div>
+        <div class="col-name">進行中</div>
+        <div class="col-count" id="doing-count">0</div>
+      </div>
+      <div class="cards-area" id="col-doing"
+        ondragover="onDragOver(event)" ondrop="onDrop(event,'doing')" ondragleave="onDragLeave(event)">
+      </div>
+    </div>
+
+    <!-- Column: Review -->
+    <div class="column" data-status="review">
+      <div class="col-header">
+        <div class="col-dot" style="background:var(--review-color)"></div>
+        <div class="col-name">待確認</div>
+        <div class="col-count" id="review-count">0</div>
+      </div>
+      <div class="cards-area" id="col-review"
+        ondragover="onDragOver(event)" ondrop="onDrop(event,'review')" ondragleave="onDragLeave(event)">
+      </div>
+    </div>
+
+    <!-- Column: Done -->
+    <div class="column" data-status="done">
+      <div class="col-header">
+        <div class="col-dot" style="background:var(--done-color)"></div>
+        <div class="col-name">已完成</div>
+        <div class="col-count" id="done-count">0</div>
+      </div>
+      <div class="cards-area" id="col-done"
+        ondragover="onDragOver(event)" ondrop="onDrop(event,'done')" ondragleave="onDragLeave(event)">
+      </div>
+    </div>
+
+  </div>
 </div>
 
-<div style="text-align:center; margin-top: 28px; color: #aaa; font-size: 12px;">
-  ☀️ Sunny · Sunright Tea Studio 競品分析系統
+<!-- Add Task Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h3>＋ 新增任務</h3>
+    <input type="text" id="new-title" placeholder="任務名稱 *" />
+    <textarea id="new-desc" placeholder="說明（選填）"></textarea>
+    <select id="new-status">
+      <option value="todo">📋 待辦</option>
+      <option value="doing">⚡ 進行中</option>
+      <option value="review">🔍 待確認</option>
+      <option value="done">✅ 已完成</option>
+    </select>
+    <select id="new-priority">
+      <option value="urgent">🔴 緊急</option>
+      <option value="high">🟠 高</option>
+      <option value="normal">🔵 一般</option>
+      <option value="low">⚪ 低</option>
+    </select>
+    <input type="text" id="new-tags" placeholder="標籤（用逗號分隔）" />
+    <input type="text" id="new-due" placeholder="截止日期（如 03/10）" />
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="addTask()">新增</button>
+    </div>
+  </div>
 </div>
 
+<script>
+// ── Data ──────────────────────────────────────────────────────────────
+let tasks = [
+  // TO DO
+  {id:1, status:'todo', priority:'high', title:'🎬 Sunright IG Story 腳本',
+   desc:'7天旋轉框架已設計，需 Soma 確認本週起始日與素材（影片或靜態圖片）',
+   tags:['行銷','IG Story'], due:'03/10', subtasks:[0,3], comments:2},
+  {id:2, status:'todo', priority:'normal', title:'🦁 獅子吉祥物透明 PNG',
+   desc:'確認 Soma 是否有透明底 logo，用於 Story 圖層疊加合成',
+   tags:['設計'], due:'', subtasks:[0,1], comments:0},
+  {id:3, status:'todo', priority:'urgent', title:'📦 Meta Ad Library 爬蟲',
+   desc:'上次 Run 抓到 0 筆廣告，需確認各品牌 Facebook 頁面正確名稱後重跑',
+   tags:['競品分析','廣告'], due:'03/05', subtasks:[0,2], comments:1},
+  {id:4, status:'todo', priority:'normal', title:'📸 Reels 縮圖修復',
+   desc:'insights.html 影片區縮圖過期（Instagram CDN 有效期約數小時），需重新嵌入 base64',
+   tags:['Dashboard','BugFix'], due:'', subtasks:[0,1], comments:0},
+  {id:5, status:'todo', priority:'normal', title:'📈 股票分析系統部署',
+   desc:'daily_stock_analysis GitHub Actions 部署，使用 Anthropic API Key，待 Soma 確認追蹤股票清單',
+   tags:['自動化'], due:'', subtasks:[0,4], comments:1},
+
+  // IN PROGRESS
+  {id:6, status:'doing', priority:'normal', title:'📅 每日輕量爬蟲',
+   desc:'每天 9am PST 爬 8 品牌最新 10 篇，偵測爆款（互動率 > 3× 中位數）Telegram 通知',
+   tags:['自動化','Cron'], due:'持續', subtasks:[3,3], comments:0},
+  {id:7, status:'doing', priority:'normal', title:'📖 每日 IG Story 爬蟲',
+   desc:'每天 8am PST 爬 8 品牌最新 Story，instaloader 登入執行，Session 存於 /tmp/ig_session',
+   tags:['自動化','Cron'], due:'持續', subtasks:[2,2], comments:0},
+
+  // DONE
+  {id:8, status:'done', priority:'normal', title:'🏆 競品分析 Dashboard（6頁）',
+   desc:'competitors / engagement / insights / growth / trends / dashboard 全部上線',
+   tags:['Dashboard'], due:'03/03', subtasks:[6,6], comments:3},
+  {id:9, status:'done', priority:'normal', title:'⭐ Sunright 品牌高亮',
+   desc:'所有 dashboard 加入綠色左框線 + 背景色，標示「我的品牌」',
+   tags:['Dashboard','設計'], due:'03/03', subtasks:[1,1], comments:0},
+  {id:10, status:'done', priority:'normal', title:'🍵 銀座西川 第 8 品牌加入',
+   desc:'爬取 100 篇貼文，品牌色 #C8102E，加入所有 dashboard 和 follower_history',
+   tags:['競品分析'], due:'03/03', subtasks:[3,3], comments:0},
+  {id:11, status:'done', priority:'normal', title:'📅 週排程 Cron 設定',
+   desc:'每週一 9am PST 全量爬蟲 + 重建 dashboard + git push（Cron ID: d33f265d）',
+   tags:['自動化'], due:'03/03', subtasks:[2,2], comments:0},
+  {id:12, status:'done', priority:'normal', title:'📊 Google Trends 整合',
+   desc:'US + California 12個月週數據，trends.html 視覺化折線圖',
+   tags:['Dashboard'], due:'03/03', subtasks:[2,2], comments:0},
+  {id:13, status:'done', priority:'normal', title:'🖼️ Top Posts 圖片 base64 嵌入',
+   desc:'解決 Instagram CDN 過期問題，縮圖全改為 base64 內嵌',
+   tags:['Dashboard'], due:'03/03', subtasks:[1,1], comments:0},
+  {id:14, status:'done', priority:'normal', title:'📅 日期篩選器',
+   desc:'competitors.html 加入 近7/30/60/90天、近1年、全部 預設選項',
+   tags:['Dashboard'], due:'03/03', subtasks:[1,1], comments:0},
+  {id:15, status:'done', priority:'normal', title:'🎨 暖米色主題統一',
+   desc:'#F5EFE6 背景 / #FDFAF5 卡片，全 6 個頁面統一風格',
+   tags:['設計'], due:'03/03', subtasks:[1,1], comments:0},
+  {id:16, status:'done', priority:'high', title:'🔧 x 軸日期格式修正',
+   desc:'engagement.html 週標籤從 "2025 W43" 改為 "2025/10/20"，ISO week → Monday date',
+   tags:['BugFix'], due:'03/03', subtasks:[1,1], comments:0},
+  {id:17, status:'done', priority:'normal', title:'🔑 IG 登入 Session',
+   desc:'instaloader 登入成功，Session 保存，含自動重登邏輯',
+   tags:['自動化'], due:'03/03', subtasks:[2,2], comments:0},
+  {id:18, status:'done', priority:'high', title:'🧹 UG Tea 帳號更正',
+   desc:'@ugtea_official → @ugtea_usa（3,826粉），全 dashboard 數據修正',
+   tags:['數據修正'], due:'03/03', subtasks:[1,1], comments:0},
+  {id:19, status:'done', priority:'normal', title:'🌐 GitHub Pages 部署',
+   desc:'greatai8888-design.github.io/ig-analysis/ 正式上線',
+   tags:['部署'], due:'03/03', subtasks:[1,1], comments:0},
+  {id:20, status:'done', priority:'high', title:'👤 USER.md 品牌更正',
+   desc:'確認 Soma 的品牌是 Sunright Tea Studio（之前誤以為是 Omomo）',
+   tags:['設定'], due:'03/03', subtasks:[1,1], comments:1},
+  {id:21, status:'done', priority:'normal', title:'📦 粉絲成長歷史追蹤',
+   desc:'follower_history.json 建立，記錄各品牌粉絲數變化，growth.html 視覺化',
+   tags:['Dashboard'], due:'03/03', subtasks:[2,2], comments:0},
+];
+
+// ── State ──
+let activeFilter = 'all';
+let activePriority = 'all';
+let dragId = null;
+
+const priorityColors = {urgent:'urgent', high:'high', normal:'normal', low:'low'};
+const tagColorMap = {
+  'Dashboard':'tag-purple','行銷':'tag-orange','IG Story':'tag-orange',
+  '設計':'tag-blue','競品分析':'tag-green','廣告':'tag-red','自動化':'tag-green',
+  'Cron':'tag-green','BugFix':'tag-red','數據修正':'tag-yellow','部署':'tag-blue',
+  '設定':'tag-gray','數據':'tag-blue','認證':'tag-gray'
+};
+
+function getTagColor(tag) {
+  return tagColorMap[tag] || 'tag-gray';
+}
+
+function renderCard(task) {
+  const donePct = task.subtasks[1] > 0 ? Math.round(task.subtasks[0]/task.subtasks[1]*100) : 0;
+  const isOverdue = task.due && task.due !== '持續' && task.due !== '' && task.status !== 'done';
+  const tags = task.tags.map(t => `<span class="card-tag ${getTagColor(t)}">${t}</span>`).join('');
+  const subtaskBar = task.subtasks[1] > 0 ? `
+    <div class="subtask-bar" title="子任務 ${task.subtasks[0]}/${task.subtasks[1]}">
+      <div class="subtask-fill" style="width:${donePct}%"></div>
+    </div>` : '';
+
+  return `
+    <div class="card" id="card-${task.id}" draggable="true"
+      ondragstart="onDragStart(event,${task.id})"
+      ondragend="onDragEnd(event)">
+      <div class="card-header">
+        <div class="priority-flag ${priorityColors[task.priority]}" title="${task.priority}"></div>
+        <div class="card-title">${task.title}</div>
+      </div>
+      <div class="card-desc">${task.desc}</div>
+      ${subtaskBar}
+      ${tags ? `<div class="card-tags">${tags}</div>` : ''}
+      <div class="card-footer">
+        <div class="assignee" title="Sunny">S</div>
+        ${task.due ? `<div class="due-date ${isOverdue?'overdue':''}">📅 ${task.due}</div>` : ''}
+        <div class="card-meta">
+          ${task.subtasks[1] > 0 ? `<div class="meta-item" title="子任務">☑️ ${task.subtasks[0]}/${task.subtasks[1]}</div>` : ''}
+          ${task.comments > 0 ? `<div class="meta-item">💬 ${task.comments}</div>` : ''}
+        </div>
+      </div>
+    </div>`;
+}
+
+function render(filterTag='all', filterPriority='all', search='') {
+  ['todo','doing','review','done'].forEach(status => {
+    const area = document.getElementById('col-'+status);
+    let filtered = tasks.filter(t => t.status === status);
+    if (filterTag !== 'all') filtered = filtered.filter(t => t.tags.includes(filterTag));
+    if (filterPriority !== 'all') filtered = filtered.filter(t => t.priority === filterPriority);
+    if (search) filtered = filtered.filter(t => t.title.toLowerCase().includes(search.toLowerCase()) || t.desc.toLowerCase().includes(search.toLowerCase()));
+
+    area.innerHTML = filtered.map(renderCard).join('') +
+      `<button class="add-card-btn" onclick="openModal('${status}')">＋ 新增任務</button>`;
+    document.getElementById(status+'-count').textContent = filtered.length;
+    if (document.getElementById('count-'+status))
+      document.getElementById('count-'+status).textContent = filtered.length;
+  });
+  // total
+  let total = tasks.length;
+  if (filterTag !== 'all') total = tasks.filter(t => t.tags.includes(filterTag)).length;
+  if (document.getElementById('count-all')) document.getElementById('count-all').textContent = total;
+}
+
+// ── Drag & Drop ──
+function onDragStart(e, id) {
+  dragId = id;
+  setTimeout(() => e.target.classList.add('dragging'), 0);
+}
+function onDragEnd(e) {
+  e.target.classList.remove('dragging');
+}
+function onDragOver(e) {
+  e.preventDefault();
+  e.currentTarget.classList.add('drag-over');
+}
+function onDragLeave(e) {
+  e.currentTarget.classList.remove('drag-over');
+}
+function onDrop(e, newStatus) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if (dragId !== null) {
+    const task = tasks.find(t => t.id === dragId);
+    if (task) task.status = newStatus;
+    dragId = null;
+    render(activeFilter, activePriority, document.getElementById('search-input').value);
+  }
+}
+
+// ── Filters ──
+function filterByStatus(status) {
+  // scroll / highlight
+  render(activeFilter, activePriority, document.getElementById('search-input').value);
+}
+function filterByPriority(p) {
+  activePriority = p;
+  render(activeFilter, activePriority, document.getElementById('search-input').value);
+}
+function filterBySearch(q) {
+  render(activeFilter, activePriority, q);
+}
+function toggleFilter(el, tag) {
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  activeFilter = tag;
+  render(activeFilter, activePriority, document.getElementById('search-input').value);
+}
+
+// ── Modal ──
+let modalDefaultStatus = 'todo';
+function openModal(status='todo') {
+  modalDefaultStatus = status;
+  document.getElementById('new-status').value = status;
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  document.getElementById('new-title').value = '';
+  document.getElementById('new-desc').value = '';
+  document.getElementById('new-tags').value = '';
+  document.getElementById('new-due').value = '';
+}
+function addTask() {
+  const title = document.getElementById('new-title').value.trim();
+  if (!title) { alert('請輸入任務名稱'); return; }
+  const tags = document.getElementById('new-tags').value.split(',').map(t => t.trim()).filter(Boolean);
+  const newId = Math.max(...tasks.map(t=>t.id)) + 1;
+  tasks.push({
+    id: newId,
+    status: document.getElementById('new-status').value,
+    priority: document.getElementById('new-priority').value,
+    title,
+    desc: document.getElementById('new-desc').value,
+    tags,
+    due: document.getElementById('new-due').value,
+    subtasks: [0,0],
+    comments: 0
+  });
+  closeModal();
+  render(activeFilter, activePriority, document.getElementById('search-input').value);
+}
+
+// Close modal on overlay click
+document.getElementById('modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// ── Init ──
+render();
+</script>
 </body>
 </html>
