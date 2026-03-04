@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sunny's Work Board ☀️</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #F5EFE6;
+    min-height: 100vh;
+    padding: 24px;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .header h1 {
+    font-size: 26px;
+    font-weight: 700;
+    color: #3a2a1a;
+    letter-spacing: 0.5px;
+  }
+  .header p {
+    color: #7a6a5a;
+    font-size: 13px;
+    margin-top: 6px;
+  }
+  .board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .column {
+    background: #EDE4D8;
+    border-radius: 14px;
+    padding: 16px;
+    min-height: 300px;
+  }
+  .col-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid rgba(0,0,0,0.08);
+  }
+  .col-header h2 {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #3a2a1a;
+  }
+  .badge {
+    background: rgba(0,0,0,0.1);
+    border-radius: 20px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #3a2a1a;
+    margin-left: auto;
+  }
+  .card {
+    background: #FDFAF5;
+    border-radius: 10px;
+    padding: 13px 14px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+    border-left: 4px solid #ddd;
+    cursor: default;
+  }
+  .card:hover { box-shadow: 0 3px 10px rgba(0,0,0,0.1); }
+  .card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #2a1a0a;
+    margin-bottom: 5px;
+    line-height: 1.4;
+  }
+  .card-desc {
+    font-size: 11.5px;
+    color: #7a6a5a;
+    line-height: 1.5;
+  }
+  .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 8px;
+  }
+  .tag {
+    background: #e8ddd0;
+    color: #5a4a3a;
+    border-radius: 20px;
+    padding: 2px 8px;
+    font-size: 10px;
+    font-weight: 600;
+  }
+  /* Column colors */
+  .col-todo .col-header h2 { color: #7a5a3a; }
+  .col-todo .card { border-left-color: #C8A800; }
+  .col-doing .col-header h2 { color: #1a5a8a; }
+  .col-doing .card { border-left-color: #2196F3; }
+  .col-done .col-header h2 { color: #1a6a3a; }
+  .col-done .card { border-left-color: #4CAF50; }
+
+  .col-doing { background: #E3ECF5; }
+  .col-done { background: #E3F0E5; }
+
+  .date-tag {
+    font-size: 10px;
+    color: #aaa;
+    float: right;
+    margin-top: 2px;
+  }
+  .emoji { font-size: 15px; }
+
+  @media (max-width: 768px) {
+    .board { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>☀️ Sunny's Work Board</h1>
+  <p>Sunright Tea Studio · 更新於 2026-03-03</p>
+</div>
+
+<div class="board">
+
+  <!-- TO DO -->
+  <div class="column col-todo">
+    <div class="col-header">
+      <span class="emoji">📋</span>
+      <h2>待辦</h2>
+      <span class="badge">5</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🎬 Sunright IG Story 腳本</div>
+      <div class="card-desc">7天旋轉框架設計完畢，等 Soma 確認本週腳本起始日與素材</div>
+      <div class="card-tags">
+        <span class="tag">行銷</span><span class="tag">IG Story</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🦁 Sunright 獅子吉祥物透明 PNG</div>
+      <div class="card-desc">確認 Soma 是否有透明底 logo，用於 Story 疊加合成</div>
+      <div class="card-tags">
+        <span class="tag">設計</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📦 Meta Ad Library 爬蟲</div>
+      <div class="card-desc">上次 Run 抓到 0 筆廣告，需要確認各品牌 Facebook 頁面名稱</div>
+      <div class="card-tags">
+        <span class="tag">競品分析</span><span class="tag">廣告</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📸 Reels 縮圖修復</div>
+      <div class="card-desc">insights.html 影片區縮圖全部過期，需重新抓取並 base64 嵌入</div>
+      <div class="card-tags">
+        <span class="tag">Dashboard</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📈 股票分析系統部署</div>
+      <div class="card-desc">daily_stock_analysis GitHub Actions 部署，使用 Anthropic API Key，需確認追蹤股票清單</div>
+      <div class="card-tags">
+        <span class="tag">股票</span><span class="tag">自動化</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- IN PROGRESS -->
+  <div class="column col-doing">
+    <div class="col-header">
+      <span class="emoji">⚡</span>
+      <h2>進行中</h2>
+      <span class="badge">2</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📅 每日輕量爬蟲</div>
+      <div class="card-desc">每天 9am PST 抓 8 品牌最新 10 篇貼文，偵測爆款（互動率 > 3× 30天中位數）並 Telegram 通知</div>
+      <div class="card-tags">
+        <span class="tag">Cron 運行中</span><span class="tag">Apify</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📖 每日 IG Story 爬蟲</div>
+      <div class="card-desc">每天 8am PST 抓 8 品牌最新 Story，以 instaloader 登入執行</div>
+      <div class="card-tags">
+        <span class="tag">Cron 運行中</span><span class="tag">instaloader</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- DONE -->
+  <div class="column col-done">
+    <div class="col-header">
+      <span class="emoji">✅</span>
+      <h2>已完成</h2>
+      <span class="badge">14</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🏆 競品分析 Dashboard (6頁)</div>
+      <div class="card-desc">competitors / engagement / insights / growth / trends / dashboard 全部上線</div>
+      <div class="card-tags">
+        <span class="tag">GitHub Pages</span><span class="tag">8個品牌</span>
+      </div>
+      <span class="date-tag">2026-03-03</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title">⭐ Sunright 品牌高亮</div>
+      <div class="card-desc">所有 dashboard 加入綠色左框線 + 背景色，標示「我的品牌」</div>
+      <div class="card-tags">
+        <span class="tag">UI</span>
+      </div>
+      <span class="date-tag">2026-03-03</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🍵 銀座西川 品牌新增</div>
+      <div class="card-desc">爬取 100 篇貼文，品牌色 #C8102E，加入所有 dashboard</div>
+      <div class="card-tags">
+        <span class="tag">8th 品牌</span>
+      </div>
+      <span class="date-tag">2026-03-03</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📅 週曆排程 (Cron)</div>
+      <div class="card-desc">每週一 9am PST 全量爬蟲 + 重建 dashboard + git push</div>
+      <div class="card-tags">
+        <span class="tag">自動化</span>
+      </div>
+      <span class="date-tag">2026-03-03</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📊 Google Trends 整合</div>
+      <div class="card-desc">US + California 12個月週數據，trends.html 視覺化</div>
+      <div class="card-tags">
+        <span class="tag">pytrends</span>
+      </div>
+      <span class="date-tag">2026-03-03</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🖼️ Top Posts 圖片 base64 嵌入</div>
+      <div class="card-desc">解決 CDN 連結過期問題，所有縮圖改為 base64 內嵌</div>
+      <div class="card-tags">
+        <span class="tag">效能</span>
+      </div>
+      <span class="date-tag">2026-03-03</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📅 日期篩選器</div>
+      <div class="card-desc">competitors.html 加入 近7/30/60/90天、近1年、全部 預設選項</div>
+      <div class="card-tags">
+        <span class="tag">UX</span>
+      </div>
+      <span class="date-tag">2026-03-03</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🎨 暖米色主題</div>
+      <div class="card-desc">#F5EFE6 背景 / #FDFAF5 卡片，全 6 頁統一風格</div>
+      <div class="card-tags">
+        <span class="tag">設計</span>
+      </div>
+      <span class="date-tag">2026-03-03</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📰 x 軸修正 (週 → 日期)</div>
+      <div class="card-desc">engagement.html 週標籤從 "2025 W43" 改為 "2025/10/20"</div>
+      <div class="card-tags">
+        <span class="tag">BugFix</span>
+      </div>
+      <span class="date-tag">2026-03-03</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🔑 IG 登入 Session</div>
+      <div class="card-desc">instaloader 登入成功，Session 存於 /tmp/ig_session，有自動重登邏輯</div>
+      <div class="card-tags">
+        <span class="tag">認證</span>
+      </div>
+      <span class="date-tag">2026-03-03</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📦 粉絲追蹤歷史</div>
+      <div class="card-desc">follower_history.json 建立，記錄各品牌粉絲數變化</div>
+      <div class="card-tags">
+        <span class="tag">數據</span>
+      </div>
+      <span class="date-tag">2026-03-03</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🧹 UG Tea 帳號更正</div>
+      <div class="card-desc">@ugtea_official → @ugtea_usa（3,826粉）資料全部修正</div>
+      <div class="card-tags">
+        <span class="tag">數據修正</span>
+      </div>
+      <span class="date-tag">2026-03-03</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🌐 GitHub Pages 部署</div>
+      <div class="card-desc">greatai8888-design.github.io/ig-analysis/ 正式上線</div>
+      <div class="card-tags">
+        <span class="tag">部署</span>
+      </div>
+      <span class="date-tag">2026-03-03</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title">👤 USER.md 更正</div>
+      <div class="card-desc">確認 Soma 的品牌是 Sunright Tea Studio（之前誤以為是 Omomo）</div>
+      <div class="card-tags">
+        <span class="tag">身份確認</span>
+      </div>
+      <span class="date-tag">2026-03-03</span>
+    </div>
+  </div>
+
+</div>
+
+<div style="text-align:center; margin-top: 28px; color: #aaa; font-size: 12px;">
+  ☀️ Sunny · Sunright Tea Studio 競品分析系統
+</div>
+
+</body>
+</html>
