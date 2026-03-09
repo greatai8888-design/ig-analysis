@@ -29,6 +29,10 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
 .rank-row { display:grid; grid-template-columns:36px 1fr 90px 90px 90px 90px 80px; align-items:center; padding:12px 16px; border-bottom:1px solid #EDE5D8; gap:8px; }
 .rank-row:last-child { border-bottom:none; }
 .rank-row.header-row { background:#F7F1E8; font-size:11px; font-weight:600; color:#9B8670; text-transform:uppercase; letter-spacing:.4px; padding:8px 16px; }
+.sortable { cursor:pointer; user-select:none; display:flex; align-items:center; gap:4px; }
+.sortable:hover { color:#5C3D2E; }
+.sort-arrow { font-size:10px; opacity:0.4; }
+.sort-arrow.active { opacity:1; color:#B87030; }
 .rank-num { font-size:14px; font-weight:700; color:#C4B09A; text-align:center; }
 .rank-num.gold { color:#F59E0B; }
 .rank-num.silver { color:#9CA3AF; }
@@ -110,11 +114,12 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
   <h2>互動率排行</h2>
   <div class="rank-table">
     <div class="rank-row header-row">
-      <div>#</div><div>品牌</div>
-      <div style="text-align:right">中位數互動率</div>
-      <div style="text-align:right">平均互動率</div>
-      <div style="text-align:right">平均讚</div>
-      <div style="text-align:right">平均留言</div>
+      <div>#</div>
+      <div class="sortable" data-sort="followers" style="justify-content:flex-start">粉絲 <span class="sort-arrow">↓</span></div>
+      <div class="sortable" data-sort="medEng" style="text-align:right;justify-content:flex-end">互動率 <span class="sort-arrow active">↓</span></div>
+      <div class="sortable" data-sort="avgEng" style="text-align:right;justify-content:flex-end">平均互動率 <span class="sort-arrow">↓</span></div>
+      <div class="sortable" data-sort="avgLikes" style="text-align:right;justify-content:flex-end">平均讚 <span class="sort-arrow">↓</span></div>
+      <div class="sortable" data-sort="postCount" style="text-align:right;justify-content:flex-end">週發文 <span class="sort-arrow">↓</span></div>
       <div></div>
     </div>
     <div id="rankBody"></div>
@@ -146,6 +151,8 @@ var __DATA__, LOGOS, __TOP_POSTS__;
 const MY_BRAND = 'sunright'; // Soma's own brand
 
 let _charts = {};
+let _currentSort = { field: 'medEng', desc: true };
+let _lastFilteredData = null;
 
 function median(arr) {
   if (!arr.length) return 0;
@@ -221,6 +228,20 @@ function startApp() {
       applyFilter();
     });
   });
+
+  // Sort click handlers
+  document.querySelectorAll('.sortable').forEach(el => {
+    el.addEventListener('click', () => {
+      const field = el.dataset.sort;
+      if (_currentSort.field === field) {
+        _currentSort.desc = !_currentSort.desc;
+      } else {
+        _currentSort.field = field;
+        _currentSort.desc = true;
+      }
+      if (_lastFilteredData) render(_lastFilteredData);
+    });
+  });
 }
 
 // ── Render ───────────────────────────────────────────────────
@@ -228,6 +249,7 @@ function render(data) {
   Object.values(_charts).forEach(c => { try{c.destroy();}catch(e){} });
   _charts = {};
 
+  _lastFilteredData = data;
   const brands = Object.entries(data).map(([key,b]) => {
     const posts = b.posts.filter(p => p.eng >= 0);
     if (!posts.length) return null;
@@ -240,8 +262,17 @@ function render(data) {
     const avgComments = avg(comments);
     const maxLikes = Math.max(...likes.filter(l=>l>=0), 0);
     const hasViral = maxLikes > b.followers * 0.5;
-    return { key, ...b, posts, avgEng, medEng, avgLikes, avgComments, hasViral };
-  }).filter(Boolean).sort((a,b)=>b.medEng-a.medEng);
+    const postCount = posts.length;
+    return { key, ...b, posts, avgEng, medEng, avgLikes, avgComments, hasViral, postCount };
+  }).filter(Boolean);
+  
+  // Sort by current sort field
+  const sortField = _currentSort.field;
+  brands.sort((a,b) => {
+    const va = a[sortField] || 0;
+    const vb = b[sortField] || 0;
+    return _currentSort.desc ? (vb - va) : (va - vb);
+  });
 
   if (!brands.length) {
     document.getElementById('rankBody').innerHTML = '<div style="padding:20px;text-align:center;color:#A89070">此區間無資料</div>';
@@ -249,9 +280,17 @@ function render(data) {
   }
 
   const rankNums = ['🥇','🥈','🥉'];
+  // Update sort arrows
+  document.querySelectorAll('.sortable .sort-arrow').forEach(arrow => {
+    const field = arrow.parentElement.dataset.sort;
+    arrow.classList.toggle('active', field === _currentSort.field);
+    arrow.textContent = (field === _currentSort.field && !_currentSort.desc) ? '↑' : '↓';
+  });
+
+  const topVal = brands[0] ? brands[0][_currentSort.field] : 1;
   document.getElementById('rankBody').innerHTML = brands.map((b,i) => {
     const isMe = b.key === MY_BRAND;
-    const pct = (b.medEng/brands[0].medEng*100).toFixed(0);
+    const pct = topVal ? ((b[_currentSort.field] || 0) / topVal * 100).toFixed(0) : 0;
     return `<div class="rank-row" style="${isMe?'background:#F0F8F1;border-left:3px solid #1a7a3a;':''}">
       <div class="rank-num ${i===0?'gold':i===1?'silver':i===2?'bronze':''}">${i<3?rankNums[i]:i+1}</div>
       <div class="brand-name">
@@ -266,7 +305,7 @@ function render(data) {
       <div class="metric highlight">${b.medEng.toFixed(2)}%</div>
       <div class="metric note">${b.avgEng.toFixed(2)}%</div>
       <div class="metric">${fmt(b.avgLikes)}</div>
-      <div class="metric">${fmt(b.avgComments)}</div>
+      <div class="metric">${b.postCount} 篇</div>
       <div><div class="bar-cell"><div class="bar-fill" style="width:${pct}%;background:${b.color}"></div></div></div>
     </div>`;
   }).join('');
